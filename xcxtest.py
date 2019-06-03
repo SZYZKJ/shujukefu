@@ -843,7 +843,7 @@ def setJilu():
     return encrypt(json.dumps({'MSG': 'OK'}))
 
 
-@app.route("/api/getShouye", methods=["POST"])
+@app.route("/test/getShouye", methods=["POST"])
 def getShouye():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -853,23 +853,84 @@ def getShouye():
         return json.dumps({'MSG': '警告！非法入侵！！！'})
     adduserhis({'openid': openid, 'time': getTime(), 'event': 'getShouye', 'detail': 'getShouye',
                 'type': '0'})
-    return encrypt(json.dumps({'MSG': 'OK', 'adList': [
-        {'title': '小程序使用介绍', 'adurl': 'https://www.lianaizhuli.com/shouye/shiyongjieshaobanner.jpg',
-         'type': 'ganhuo', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/shiyongjieshao.mp4',
-         'duration': '04:04', 'direction': '0'},
-        {'title': '恋爱联盟招聘',
-         'adurl': 'https://www.lianaizhuli.com/shouye/zhaopinbanner.jpg',
-         'type': 'image', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/zhaopin1.jpg'},
+    return encrypt(json.dumps({'MSG': 'OK', 'lunbotu': [
+        {'title': '新用户', 'adurl': wangzhi + 'shouye/lunbotu/xinyonghu.png',
+         'type': 'html', 'url': 'https://mp.weixin.qq.com/s/CQqCd6tQ0Tv2AvE_-6aclQ'},
+        # {'title': '小程序使用介绍', 'adurl': 'https://www.lianaizhuli.com/shouye/shiyongjieshaobanner.jpg',
+        #  'type': 'ganhuo', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/shiyongjieshao.mp4',
+        #  'duration': '04:04', 'direction': '0'},
+        # {'title': '恋爱联盟招聘',
+        #  'adurl': 'https://www.lianaizhuli.com/shouye/zhaopinbanner.jpg',
+        #  'type': 'image', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/zhaopin1.jpg'},
         # {'title': '迷男方法第一步', 'adurl': 'https://www.lianaizhuli.com/shouye/diyibu.jpg',
         #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/6ouchJC7qurRuwe6MbIxbA'},
         # {'title': '迷男方法第二步', 'adurl': 'https://www.lianaizhuli.com/shouye/dierbu.jpg',
         #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/-3eouLbbREZFUHGxiJ6NHA'},
         # {'title': '迷男方法第三步', 'adurl': 'https://www.lianaizhuli.com/shouye/disanbu.jpg',
         #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/qnYR4DiOtmvcLcbfAVmuUA'},
-    ]}))
+    ],
+                               'tubiao': [{'title': '课程精选', 'image': wangzhi + 'shouye/tubiao/kechengjingxuan.png',
+                                           'page': 'kecheng'},
+                                          {'title': '土味情话', 'image': wangzhi + 'shouye/tubiao/tuweiqinghua.png',
+                                           'page': 'twqh'},
+                                          {'title': '撩妹套路', 'image': wangzhi + 'shouye/tubiao/liaomeitaolu.png',
+                                           'page': 'lmtl'},
+                                          {'title': '情感百科', 'image': wangzhi + 'shouye/tubiao/qingganbaike.png',
+                                           'page': 'qingganbaike'}, ],
+                               'searchicon': wangzhi + 'shouye/search.png',
+                               'miaoshu': '复制女生聊天的话搜索获得最佳回复，轻轻一点即可复制',
+                               'gengduoicon': wangzhi + 'shouye/gengduo.png',
+                               'kecheng': {'image': wangzhi + 'shouye/wenzi/kecheng.png', 'gengduo': '更多', 'data': [
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng1.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng2.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng3.png',
+                                    'num': 12345},]},
+                               'xingxiangjianshe': {'image': wangzhi + 'shouye/wenzi/xingxiangjianshe.png', 'gengduo': '更多', 'data': [
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe1.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe2.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe3.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe4.png',
+                                    'num': 12345}, ]},
+                               'qingganbaike': {'image': wangzhi + 'shouye/wenzi/qingganbaike.png', 'gengduo': '更多', 'data': [
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/qingganbaike1.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/qingganbaike2.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/qingganbaike3.png',
+                                    'num': 12345}, ]},
+                               'liaomeishizhan': {'image': wangzhi + 'shouye/wenzi/liaomeishizhan.png', 'gengduo': '更多', 'data': [
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan1.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan2.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan3.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan4.png',
+                                    'num': 12345}, ]},
+                               'sijiao': {'image': wangzhi + 'shouye/wenzi/sijiao.png', 'gengduo': '更多', 'data': [
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao1.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao2.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao3.png',
+                                    'num': 12345}, ]},
+                               'xinliceshi': {'image': wangzhi + 'shouye/wenzi/xinliceshi.png', 'gengduo': '更多', 'data': [
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi1.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi2.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi3.png',
+                                    'num': 12345},
+                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi4.png',
+                                    'num': 12345}, ]},
+                               }))
 
 
 if __name__ == "__main__":
     server = pywsgi.WSGIServer(('127.0.0.1', 18888), app)
     server.serve_forever()
-    
