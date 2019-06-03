@@ -812,7 +812,7 @@ def getIslianmeng():
             return encrypt(json.dumps({'MSG': 'OK', 'issystem': 1, 'islianmeng': islianmeng}))
 
 
-@app.route("/api/setJilu", methods=["POST"])
+@app.route("/test/setJilu", methods=["POST"])
 def setJilu():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -886,32 +886,46 @@ def getShouye():
                                    {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng2.png',
                                     'num': 12345},
                                    {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng3.png',
-                                    'num': 12345},]},
-                               'xingxiangjianshe': {'image': wangzhi + 'shouye/wenzi/xingxiangjianshe.png', 'gengduo': '更多', 'data': [
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe1.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe2.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe3.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xingxiangjianshe4.png',
                                     'num': 12345}, ]},
-                               'qingganbaike': {'image': wangzhi + 'shouye/wenzi/qingganbaike.png', 'gengduo': '更多', 'data': [
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/qingganbaike1.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/qingganbaike2.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/qingganbaike3.png',
-                                    'num': 12345}, ]},
-                               'liaomeishizhan': {'image': wangzhi + 'shouye/wenzi/liaomeishizhan.png', 'gengduo': '更多', 'data': [
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan1.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan2.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan3.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/liaomeishizhan4.png',
-                                    'num': 12345}, ]},
+                               'xingxiangjianshe': {'image': wangzhi + 'shouye/wenzi/xingxiangjianshe.png',
+                                                    'gengduo': '更多', 'data': [
+                                       {'title': '打造让女生着迷的朋友圈',
+                                        'image': wangzhi + 'shouye/images/xingxiangjianshe1.png',
+                                        'num': 12345},
+                                       {'title': '打造让女生着迷的朋友圈',
+                                        'image': wangzhi + 'shouye/images/xingxiangjianshe2.png',
+                                        'num': 12345},
+                                       {'title': '打造让女生着迷的朋友圈',
+                                        'image': wangzhi + 'shouye/images/xingxiangjianshe3.png',
+                                        'num': 12345},
+                                       {'title': '打造让女生着迷的朋友圈',
+                                        'image': wangzhi + 'shouye/images/xingxiangjianshe4.png',
+                                        'num': 12345}, ]},
+                               'qingganbaike': {'image': wangzhi + 'shouye/wenzi/qingganbaike.png', 'gengduo': '更多',
+                                                'data': [
+                                                    {'title': '打造让女生着迷的朋友圈',
+                                                     'image': wangzhi + 'shouye/images/qingganbaike1.png',
+                                                     'num': 12345},
+                                                    {'title': '打造让女生着迷的朋友圈',
+                                                     'image': wangzhi + 'shouye/images/qingganbaike2.png',
+                                                     'num': 12345},
+                                                    {'title': '打造让女生着迷的朋友圈',
+                                                     'image': wangzhi + 'shouye/images/qingganbaike3.png',
+                                                     'num': 12345}, ]},
+                               'liaomeishizhan': {'image': wangzhi + 'shouye/wenzi/liaomeishizhan.png', 'gengduo': '更多',
+                                                  'data': [
+                                                      {'title': '打造让女生着迷的朋友圈',
+                                                       'image': wangzhi + 'shouye/images/liaomeishizhan1.png',
+                                                       'num': 12345},
+                                                      {'title': '打造让女生着迷的朋友圈',
+                                                       'image': wangzhi + 'shouye/images/liaomeishizhan2.png',
+                                                       'num': 12345},
+                                                      {'title': '打造让女生着迷的朋友圈',
+                                                       'image': wangzhi + 'shouye/images/liaomeishizhan3.png',
+                                                       'num': 12345},
+                                                      {'title': '打造让女生着迷的朋友圈',
+                                                       'image': wangzhi + 'shouye/images/liaomeishizhan4.png',
+                                                       'num': 12345}, ]},
                                'sijiao': {'image': wangzhi + 'shouye/wenzi/sijiao.png', 'gengduo': '更多', 'data': [
                                    {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao1.png',
                                     'num': 12345},
@@ -919,16 +933,141 @@ def getShouye():
                                     'num': 12345},
                                    {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao3.png',
                                     'num': 12345}, ]},
-                               'xinliceshi': {'image': wangzhi + 'shouye/wenzi/xinliceshi.png', 'gengduo': '更多', 'data': [
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi1.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi2.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi3.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/xinliceshi4.png',
-                                    'num': 12345}, ]},
+                               'xinliceshi': {'image': wangzhi + 'shouye/wenzi/xinliceshi.png', 'gengduo': '更多',
+                                              'data': [
+                                                  {'title': '打造让女生着迷的朋友圈',
+                                                   'image': wangzhi + 'shouye/images/xinliceshi1.png',
+                                                   'num': 12345},
+                                                  {'title': '打造让女生着迷的朋友圈',
+                                                   'image': wangzhi + 'shouye/images/xinliceshi2.png',
+                                                   'num': 12345},
+                                                  {'title': '打造让女生着迷的朋友圈',
+                                                   'image': wangzhi + 'shouye/images/xinliceshi3.png',
+                                                   'num': 12345},
+                                                  {'title': '打造让女生着迷的朋友圈',
+                                                   'image': wangzhi + 'shouye/images/xinliceshi4.png',
+                                                   'num': 12345}, ]},
                                }))
+
+
+@app.route("/test/getQingganbaike", methods=["POST"])
+def getQingganbaike():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getQingganbaike', 'detail': 'getQingganbaike',
+                'type': '0'})
+    return encrypt(json.dumps({'MSG': 'OK', 'wenda': [{'title': '单身期', 'image': wangzhi + 'qingganbaike/danshenqi.png',
+                                                       'list': [{'category_name': '聊天搭讪', 'category_id': 6},
+                                                                {'category_name': '相亲', 'category_id': 7},
+                                                                {'category_name': '社交软件', 'category_id': 8},
+                                                                {'category_name': '线下交友', 'category_id': 9},
+                                                                {'category_name': '暗恋', 'category_id': 10},
+                                                                {'category_name': '形象改造', 'category_id': 11},
+                                                                {'category_name': '心态建设', 'category_id': 12},
+                                                                {'category_name': '了解女性', 'category_id': 13}, ]},
+                                                      {'title': '追求期', 'image': wangzhi + 'qingganbaike/zhuiqiuqi.png',
+                                                       'list': [{'category_name': '吸引女生', 'category_id': 14},
+                                                                {'category_name': '聊天技巧', 'category_id': 15},
+                                                                {'category_name': '约会', 'category_id': 16},
+                                                                {'category_name': '表白', 'category_id': 17}, ]},
+                                                      {'title': '恋爱期', 'image': wangzhi + 'qingganbaike/lianaiqi.png',
+                                                       'list': [{'category_name': '异地恋', 'category_id': 18},
+                                                                {'category_name': '出轨', 'category_id': 19},
+                                                                {'category_name': '长期相处', 'category_id': 20},
+                                                                {'category_name': '冷战吵架', 'category_id': 21}, ]},
+                                                      {'title': '失恋期', 'image': wangzhi + 'qingganbaike/shilianqi.png',
+                                                       'list': [{'category_name': '挽回复合', 'category_id': 22},
+                                                                {'category_name': '重建吸引', 'category_id': 23},
+                                                                {'category_name': '挽回沟通', 'category_id': 24},
+                                                                {'category_name': '真假分手', 'category_id': 25},
+                                                                {'category_name': '走出失恋', 'category_id': 26}, ]},
+                                                      {'title': '婚姻期', 'image': wangzhi + 'qingganbaike/hunyinqi.png',
+                                                       'list': [{'category_name': '挽救婚姻', 'category_id': 27},
+                                                                {'category_name': '婚外情', 'category_id': 28}, ]}, ],
+                               'rumen': [
+                                   {'title': '怎么让你的话撩动屏幕后面的她', 'image': wangzhi + 'qingganbaike/wangshangliaomei.png',
+                                    'category_name': '网上撩妹', 'category_id': 10},
+                                   {'title': '聊天宝典，随机随处可用', 'image': wangzhi + 'qingganbaike/xianxialiaotian.png',
+                                    'category_name': '线下聊天', 'category_id': 3},
+                                   {'title': '邀约话术，让女生迫不及待的跟你约会', 'image': wangzhi + 'qingganbaike/yaoqingyuehui.png',
+                                    'category_name': '邀请约会', 'category_id': 16},
+                                   {'title': '搭讪话题，搭讪技巧，让你快速破冰', 'image': wangzhi + 'qingganbaike/yixingdashan.png',
+                                    'category_name': '异性搭讪', 'category_id': 13},
+                                   {'title': '狙击真命女神，让她对你念念不忘', 'image': wangzhi + 'qingganbaike/jujizhenming.png',
+                                    'category_name': '狙击真命', 'category_id': 9},
+                                   {'title': '避免表白雷区，表白无压力', 'image': wangzhi + 'qingganbaike/wanmeibiaobai.png',
+                                    'category_name': '完美表白', 'category_id': 11}, ],
+                               'jinjie': [
+                                   {'title': '把控节奏，推进关系，让她离不开你', 'image': wangzhi + 'qingganbaike/quedingguanxi.png',
+                                    'category_name': '确定关系', 'category_id': 8},
+                                   {'title': '美满而幸福的婚姻是靠经营出来的', 'image': wangzhi + 'qingganbaike/hunyinjingying.png',
+                                    'category_name': '婚姻经营', 'category_id': 7},
+                                   {'title': '找到情感问题的关键', 'image': wangzhi + 'qingganbaike/fenshouwanhui.png',
+                                    'category_name': '分手挽回', 'category_id': 4},
+                                   {'title': '升温情感，毁约交往更顺畅', 'image': wangzhi + 'qingganbaike/guanxipobing.png',
+                                    'category_name': '关系破冰', 'category_id': 6},
+                                   {'title': '相亲小技巧，告别失败阴影', 'image': wangzhi + 'qingganbaike/xiangqinjiqiao.png',
+                                    'category_name': '相亲技巧', 'category_id': 14},
+                                   {'title': '形象决定气质，改变从现在开始', 'image': wangzhi + 'qingganbaike/xingxiangtisheng.png',
+                                    'category_name': '形象提升', 'category_id': 12},
+                                   {'title': '有爱，距离不是问题', 'image': wangzhi + 'qingganbaike/yidilian.png',
+                                    'category_name': '异地恋', 'category_id': 15}, ], }))
+
+
+@app.route("/test/getQingganbaikeList", methods=["POST"])
+def getQingganbaikeList():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        category_id = params['category_id']
+        scroll = params['scroll']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getQingganbaikeList', 'detail': 'getQingganbaikeList',
+                'type': '0'})
+    retdata = []
+    search = {'query': {'bool': {'filter': {"term": {'category_id': category_id}}}}}
+    if scroll:
+        try:
+            Docs = es.scroll(scroll_id=scroll, scroll="5m")
+        except:
+            Docs = es.search(index='baike', doc_type='baike', body=search, size=10, scroll="5m")
+
+    else:
+        Docs = es.search(index='baike', doc_type='baike', body=search, size=10, scroll="5m")
+    scroll = Docs['_scroll_id']
+    Docs = Docs['hits']['hits']
+    for doc in Docs:
+        doc = doc['_source']
+        newdoc = {}
+        newdoc['id'] = doc['id']
+        newdoc['post_title'] = doc['post_title']
+        newdoc['image'] = doc['image']
+        newdoc['is_like'] = doc['is_like']
+        retdata.append(newdoc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
+
+
+@app.route("/test/getBaike", methods=["POST"])
+def getBaike():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        baikeid = int(params['id'])
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getBaike', 'detail': baikeid,
+                'type': '0'})
+    doc = es.get(index='baike', doc_type='baike', id=baikeid)['_source']
+    doc['is_like'] += 1
+    es.index(index='baike', doc_type='baike', id=baikeid, body=doc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
 
 
 if __name__ == "__main__":

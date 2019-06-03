@@ -11,11 +11,12 @@ datapath = '/home/ubuntu/data/lianailianmeng/data'
 os.chdir(datapath)
 
 
-name='wenzhang'
-f=open(name+'.json')
-ff=open(name+'0.json','w')
-for line in f:
+ff=open('wenda0.json','w')
+for line in open('wenda.json'):
     line=json.loads(line)
+    f=open('opendata/wenda/'+str(line['id'])+'.html','w')
+    f.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF8"></head><body>\n'+line['post_content']+'</body></html>\n')
+    f.close()
+    line.pop('post_content')
     ff.write(json.dumps(line,ensure_ascii=False)+'\n')
-f.close()
 ff.close()
