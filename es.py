@@ -14,13 +14,14 @@ blocklen = 500
 
 class Lianaizhuli_ES:
     es = Elasticsearch([{"host": "119.29.67.239", "port": 9218, "timeout": 3600}])
+    # escopy = Elasticsearch([{"host": "182.254.227.188", "port": 9218, "timeout": 3600}])
 
     def __init__(self):
         # self.es.indices.delete(index='userinfo')
         # self.es.indices.delete(index='userzhifu')
         # self.es.indices.delete(index='tuweiqinghua')
         # self.es.indices.delete(index='jinpushequ')
-        self.es.indices.delete(index='kefu')
+        # self.es.indices.delete(index='kefu')
         if self.es.indices.exists(index='kefu') is not True:
             lianaizhuli_index = {
                 "settings": {
@@ -96,16 +97,45 @@ class Lianaizhuli_ES:
         return None
 
 
-# LAES=Lianaizhuli_ES()
-# print(LAES.es.get(index='userinfo',doc_type='userinfo',id='oz7z64hH8HiPnWCYFCJpNBqC2J1E'))
-
 LAES=Lianaizhuli_ES()
-# search = {"query": {"match_all": {}}}
-# Docs=LAES.es.search(index='userinfo',doc_type='userinfo',body=search,size=10000)
-# t=0
-# for doc in Docs['hits']['hits']:
-#     if doc['_source']['addtime']=='20190112':
-#         print(doc['_source']['options'],doc['_source']['city'])
-#         if '1000009' in json.dumps(doc['_source']['options']):
-#             t+=1
-# print(t)
+
+# LAES.escopy.delete(index='userinfo',doc_type='userinfo',id='oz7z64tQmf3SAoW7qqtxk9IitxZ0')#罗尼
+
+nowtime = time.strftime("%Y%m%d", time.localtime())
+# nowtime='20190521'
+def chaxun29():
+    global nowtime
+    search = {"query": {"match_all": {}}}
+    Docs=LAES.es.search(index='userzhifu',doc_type='userzhifu',body=search,size=10000)
+    t=0
+    a=[]
+    for doc in Docs['hits']['hits']:
+        if doc['_source']['updatatime'][:8]>=nowtime:
+            a.append(doc['_source']['openid'])
+            # print(doc['_source']['options'],doc['_source']['city'])
+            # if '1000009' in json.dumps(doc['_source']['options']):
+            #     t+=1
+    for openid in a:
+        doc=LAES.es.get(index='userinfo',doc_type='userinfo',id=openid)
+        if doc['_source']['vipdengji']>=1 and doc['_source']['viptime']>int(time.time()):
+            if 'purePhoneNumber' in doc['_source']:
+                print(doc['_source'])
+                print(doc['_source']['purePhoneNumber'],doc['_source']['nickName'],doc['_source']['province'],doc['_source']['city'])
+
+    print('-----------------------------------')
+    # body = {"query": {"match_phrase_prefix": {"addtime": nowtime}}}
+    # Docs = LAES.es.search(index='userinfo', doc_type='userinfo', body=body, size=10000)
+    # Docs = Docs['hits']['hits']
+    # for doc in Docs:
+    #     print(doc['_source'])
+
+
+chaxun29()
+
+
+
+
+
+
+
+
