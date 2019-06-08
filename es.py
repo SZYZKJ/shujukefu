@@ -22,11 +22,16 @@ class Lianaizhuli_ES:
         # self.es.indices.delete(index='ganhuo')
         # self.es.indices.delete(index='xingxiangjianshe')
         # self.es.indices.delete(index='liaomeishizhan')
+        # self.es.indices.delete(index='baikelist')
         # self.es.indices.delete(index='baike')
+        # self.es.indices.delete(index='wendalist')
         # self.es.indices.delete(index='wenda')
+        self.es.indices.delete(index='xinliceshilist')
+        self.es.indices.delete(index='xinliceshi')
+        self.es.indices.delete(index='xinliceshiret')
         # self.es.indices.delete(index='tuweiqinghua')
         # self.es.indices.delete(index='biaoqing')
-        if self.es.indices.exists(index='baike') is not True:
+        if self.es.indices.exists(index='xinliceshi') is not True:
             lianaizhuli_index = {
                 "settings": {
                     "number_of_shards": 1,
@@ -48,34 +53,44 @@ class Lianaizhuli_ES:
                     }
                 }
             }
-            # ret_huashu = self.es.indices.create(index='huashu', body=lianaizhuli_index, ignore=400)
-            # print(ret_huashu)
-            # ret_guanli = self.es.indices.create(index='guanli', body=lianaizhuli_index, ignore=400)
-            # print(ret_guanli)
-            # ret_methodology = self.es.indices.create(index='methodology', body=lianaizhuli_index, ignore=400)
-            # print(ret_methodology)
-            # ret_wenzhang = self.es.indices.create(index='xingxiangjianshe', body=lianaizhuli_index, ignore=400)
-            # print(ret_wenzhang)
-            # ret_wenzhang = self.es.indices.create(index='liaomeishizhan', body=lianaizhuli_index, ignore=400)
-            # print(ret_wenzhang)
-            ret_wenzhang = self.es.indices.create(index='baike', body=lianaizhuli_index, ignore=400)
-            print(ret_wenzhang)
-            ret_wenzhang = self.es.indices.create(index='wenda', body=lianaizhuli_index, ignore=400)
-            print(ret_wenzhang)
-            # ret_ganhuo = self.es.indices.create(index='ganhuo', body=lianaizhuli_index, ignore=400)
-            # print(ret_ganhuo)
-            # ret_kecheng = self.es.indices.create(index='kecheng', body=lianaizhuli_index, ignore=400)
-            # print(ret_kecheng)
-            # ret_tuweiqinghua = self.es.indices.create(index='tuweiqinghua', body=lianaizhuli_index, ignore=400)
-            # print(ret_tuweiqinghua)
-            # ret_biaoqing = self.es.indices.create(index='biaoqing', body=lianaizhuli_index, ignore=400)
-            # print(ret_biaoqing)
-            # ret_userhis = self.es.indices.create(index='userhis', body=lianaizhuli_index, ignore=400)
-            # print(ret_userhis)
-            # ret_userinfo = self.es.indices.create(index='userinfo', body=lianaizhuli_index, ignore=400)
-            # print(ret_userinfo)
-            # ret_userzhifu = self.es.indices.create(index='userzhifu', body=lianaizhuli_index, ignore=400)
-            # print(ret_userzhifu)
+            # ret_data = self.es.indices.create(index='huashu', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='guanli', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='methodology', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='xingxiangjianshe', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='liaomeishizhan', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='baikelist', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='baike', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='wendalist', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='wenda', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            ret_data = self.es.indices.create(index='xinliceshilist', body=lianaizhuli_index, ignore=400)
+            print(ret_data)
+            ret_data = self.es.indices.create(index='xinliceshi', body=lianaizhuli_index, ignore=400)
+            print(ret_data)
+            ret_data = self.es.indices.create(index='xinliceshiret', body=lianaizhuli_index, ignore=400)
+            print(ret_data)
+            # ret_data = self.es.indices.create(index='ganhuo', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='kecheng', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='tuweiqinghua', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='biaoqing', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='userhis', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='userinfo', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
+            # ret_data = self.es.indices.create(index='userzhifu', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
             actions = []
             # with open('huashu.csv', 'r') as f:
             #     for line in csv.reader(f):
@@ -172,12 +187,68 @@ class Lianaizhuli_ES:
             # while len(actions):
             #     helpers.bulk(self.es, actions[:blocklen])
             #     actions = actions[blocklen:]
-            with open('baike.json', 'r') as f:
+            # with open('baikelist.json', 'r') as f:
+            #     for line in f:
+            #         item = json.loads(line.strip())
+            #         action = {
+            #             "_index": "baikelist",
+            #             "_type": "baikelist",
+            #             '_id': item['id'],
+            #             "_source": item
+            #         }
+            #         actions.append(action)
+            # random.shuffle(actions)
+            # while len(actions):
+            #     helpers.bulk(self.es, actions[:blocklen])
+            #     actions = actions[blocklen:]
+            # with open('baike.json', 'r') as f:
+            #     for line in f:
+            #         item = json.loads(line.strip())
+            #         action = {
+            #             "_index": "baike",
+            #             "_type": "baike",
+            #             '_id': item['id'],
+            #             "_source": item
+            #         }
+            #         actions.append(action)
+            # random.shuffle(actions)
+            # while len(actions):
+            #     helpers.bulk(self.es, actions[:blocklen])
+            #     actions = actions[blocklen:]
+            # with open('wendalist.json', 'r') as f:
+            #     for line in f:
+            #         item = json.loads(line.strip())
+            #         action = {
+            #             "_index": "wendalist",
+            #             "_type": "wendalist",
+            #             '_id': item['id'],
+            #             "_source": item
+            #         }
+            #         actions.append(action)
+            # random.shuffle(actions)
+            # while len(actions):
+            #     helpers.bulk(self.es, actions[:blocklen])
+            #     actions = actions[blocklen:]
+            # with open('wenda.json', 'r') as f:
+            #     for line in f:
+            #         item = json.loads(line.strip())
+            #         action = {
+            #             "_index": "wenda",
+            #             "_type": "wenda",
+            #             '_id': item['id'],
+            #             "_source": item
+            #         }
+            #         actions.append(action)
+            # random.shuffle(actions)
+            # while len(actions):
+            #     helpers.bulk(self.es, actions[:blocklen])
+            #     actions = actions[blocklen:]
+            with open('xinliceshilist.json', 'r') as f:
                 for line in f:
                     item = json.loads(line.strip())
                     action = {
-                        "_index": "baike",
-                        "_type": "baike",
+                        "_index": "xinliceshilist",
+                        "_type": "xinliceshilist",
                         '_id': item['id'],
                         "_source": item
                     }
@@ -186,12 +257,26 @@ class Lianaizhuli_ES:
             while len(actions):
                 helpers.bulk(self.es, actions[:blocklen])
                 actions = actions[blocklen:]
-            with open('wenda.json', 'r') as f:
+            with open('xinliceshi.json', 'r') as f:
                 for line in f:
                     item = json.loads(line.strip())
                     action = {
-                        "_index": "wenda",
-                        "_type": "wenda",
+                        "_index": "xinliceshi",
+                        "_type": "xinliceshi",
+                        '_id': item['id'],
+                        "_source": item
+                    }
+                    actions.append(action)
+            random.shuffle(actions)
+            while len(actions):
+                helpers.bulk(self.es, actions[:blocklen])
+                actions = actions[blocklen:]
+            with open('xinliceshiret.json', 'r') as f:
+                for line in f:
+                    item = json.loads(line.strip())
+                    action = {
+                        "_index": "xinliceshiret",
+                        "_type": "xinliceshiret",
                         '_id': item['id'],
                         "_source": item
                     }

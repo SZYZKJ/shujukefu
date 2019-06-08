@@ -11,12 +11,9 @@ datapath = '/home/ubuntu/data/lianailianmeng/data'
 os.chdir(datapath)
 
 
-ff=open('wenda0.json','w')
-for line in open('wenda.json'):
+f=open('xinliceshiret.json0','w')
+for line in open('xinliceshiret.json'):
     line=json.loads(line)
-    f=open('opendata/wenda/'+str(line['id'])+'.html','w')
-    f.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF8"></head><body>\n'+line['post_content']+'</body></html>\n')
-    f.close()
-    line.pop('post_content')
-    ff.write(json.dumps(line,ensure_ascii=False)+'\n')
-ff.close()
+    line['data']=json.dumps(line['data'],ensure_ascii=False)
+    f.write(json.dumps(line,ensure_ascii=False)+'\n')
+f.close()

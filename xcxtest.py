@@ -5,6 +5,7 @@ monkey.patch_all()
 import sys
 import io
 import os
+import re
 import random
 import json
 import csv
@@ -880,6 +881,7 @@ def getShouye():
                                'searchicon': wangzhi + 'shouye/search.png',
                                'miaoshu': '复制女生聊天的话搜索获得最佳回复，轻轻一点即可复制',
                                'gengduoicon': wangzhi + 'shouye/gengduo.png',
+                               'tuijian': ['我有男朋友了', '你真自恋', '我去洗澡了', '表白', '哈哈'],
                                'kecheng': {'image': wangzhi + 'shouye/wenzi/kecheng.png', 'gengduo': '更多', 'data': [
                                    {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng1.png',
                                     'num': 12345},
@@ -960,34 +962,37 @@ def getQingganbaike():
         return json.dumps({'MSG': '警告！非法入侵！！！'})
     adduserhis({'openid': openid, 'time': getTime(), 'event': 'getQingganbaike', 'detail': 'getQingganbaike',
                 'type': '0'})
-    return encrypt(json.dumps({'MSG': 'OK', 'wenda': [{'title': '单身期', 'image': wangzhi + 'qingganbaike/danshenqi.png',
-                                                       'list': [{'category_name': '聊天搭讪', 'category_id': 6},
-                                                                {'category_name': '相亲', 'category_id': 7},
-                                                                {'category_name': '社交软件', 'category_id': 8},
-                                                                {'category_name': '线下交友', 'category_id': 9},
-                                                                {'category_name': '暗恋', 'category_id': 10},
-                                                                {'category_name': '形象改造', 'category_id': 11},
-                                                                {'category_name': '心态建设', 'category_id': 12},
-                                                                {'category_name': '了解女性', 'category_id': 13}, ]},
-                                                      {'title': '追求期', 'image': wangzhi + 'qingganbaike/zhuiqiuqi.png',
-                                                       'list': [{'category_name': '吸引女生', 'category_id': 14},
-                                                                {'category_name': '聊天技巧', 'category_id': 15},
-                                                                {'category_name': '约会', 'category_id': 16},
-                                                                {'category_name': '表白', 'category_id': 17}, ]},
-                                                      {'title': '恋爱期', 'image': wangzhi + 'qingganbaike/lianaiqi.png',
-                                                       'list': [{'category_name': '异地恋', 'category_id': 18},
-                                                                {'category_name': '出轨', 'category_id': 19},
-                                                                {'category_name': '长期相处', 'category_id': 20},
-                                                                {'category_name': '冷战吵架', 'category_id': 21}, ]},
-                                                      {'title': '失恋期', 'image': wangzhi + 'qingganbaike/shilianqi.png',
-                                                       'list': [{'category_name': '挽回复合', 'category_id': 22},
-                                                                {'category_name': '重建吸引', 'category_id': 23},
-                                                                {'category_name': '挽回沟通', 'category_id': 24},
-                                                                {'category_name': '真假分手', 'category_id': 25},
-                                                                {'category_name': '走出失恋', 'category_id': 26}, ]},
-                                                      {'title': '婚姻期', 'image': wangzhi + 'qingganbaike/hunyinqi.png',
-                                                       'list': [{'category_name': '挽救婚姻', 'category_id': 27},
-                                                                {'category_name': '婚外情', 'category_id': 28}, ]}, ],
+    return encrypt(json.dumps({'MSG': 'OK',
+                               'rumenjieduan': wangzhi + 'qingganbaike/rumenjieduan.png',
+                               'jinjiejieduan': wangzhi + 'qingganbaike/jinjiejieduan.png',
+                               'wenda': [{'title': '单身期', 'image': wangzhi + 'qingganbaike/danshenqi.png',
+                                          'list': [{'category_name': '聊天搭讪', 'category_id': 6},
+                                                   {'category_name': '相亲', 'category_id': 7},
+                                                   {'category_name': '社交软件', 'category_id': 8},
+                                                   {'category_name': '线下交友', 'category_id': 9},
+                                                   {'category_name': '暗恋', 'category_id': 10},
+                                                   {'category_name': '形象改造', 'category_id': 11},
+                                                   {'category_name': '心态建设', 'category_id': 12},
+                                                   {'category_name': '了解女性', 'category_id': 13}, ]},
+                                         {'title': '追求期', 'image': wangzhi + 'qingganbaike/zhuiqiuqi.png',
+                                          'list': [{'category_name': '吸引女生', 'category_id': 14},
+                                                   {'category_name': '聊天技巧', 'category_id': 15},
+                                                   {'category_name': '约会', 'category_id': 16},
+                                                   {'category_name': '表白', 'category_id': 17}, ]},
+                                         {'title': '恋爱期', 'image': wangzhi + 'qingganbaike/lianaiqi.png',
+                                          'list': [{'category_name': '异地恋', 'category_id': 18},
+                                                   {'category_name': '出轨', 'category_id': 19},
+                                                   {'category_name': '长期相处', 'category_id': 20},
+                                                   {'category_name': '冷战吵架', 'category_id': 21}, ]},
+                                         {'title': '失恋期', 'image': wangzhi + 'qingganbaike/shilianqi.png',
+                                          'list': [{'category_name': '挽回复合', 'category_id': 22},
+                                                   {'category_name': '重建吸引', 'category_id': 23},
+                                                   {'category_name': '挽回沟通', 'category_id': 24},
+                                                   {'category_name': '真假分手', 'category_id': 25},
+                                                   {'category_name': '走出失恋', 'category_id': 26}, ]},
+                                         {'title': '婚姻期', 'image': wangzhi + 'qingganbaike/hunyinqi.png',
+                                          'list': [{'category_name': '挽救婚姻', 'category_id': 27},
+                                                   {'category_name': '婚外情', 'category_id': 28}, ]}, ],
                                'rumen': [
                                    {'title': '怎么让你的话撩动屏幕后面的她', 'image': wangzhi + 'qingganbaike/wangshangliaomei.png',
                                     'category_name': '网上撩妹', 'category_id': 10},
@@ -1028,7 +1033,7 @@ def getQingganbaikeList():
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getQingganbaikeList', 'detail': 'getQingganbaikeList',
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getQingganbaikeList', 'detail': category_id,
                 'type': '0'})
     retdata = []
     search = {'query': {'bool': {'filter': {"term": {'category_id': category_id}}}}}
@@ -1036,21 +1041,21 @@ def getQingganbaikeList():
         try:
             Docs = es.scroll(scroll_id=scroll, scroll="5m")
         except:
-            Docs = es.search(index='baike', doc_type='baike', body=search, size=10, scroll="5m")
+            Docs = es.search(index='baikelist', doc_type='baikelist', body=search, size=10, scroll="5m")
 
     else:
-        Docs = es.search(index='baike', doc_type='baike', body=search, size=10, scroll="5m")
+        Docs = es.search(index='baikelist', doc_type='baikelist', body=search, size=10, scroll="5m")
     scroll = Docs['_scroll_id']
     Docs = Docs['hits']['hits']
     for doc in Docs:
         doc = doc['_source']
-        newdoc = {}
-        newdoc['id'] = doc['id']
-        newdoc['post_title'] = doc['post_title']
-        newdoc['image'] = doc['image']
-        newdoc['is_like'] = doc['is_like']
-        retdata.append(newdoc)
+        retdata.append(doc)
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
+
+
+def changstr(matched):
+    return '<img style="max-width:100%;height:auto;" ' + str(
+        re.search('src=\\".*?"', str(matched.group(0))).group(0)) + '/>'
 
 
 @app.route("/test/getBaike", methods=["POST"])
@@ -1058,16 +1063,155 @@ def getBaike():
     try:
         params = json.loads(decrypt(request.stream.read()))
         openid = params['openid']
-        baikeid = int(params['id'])
+        baikeid = int(params['baikeid'])
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
     adduserhis({'openid': openid, 'time': getTime(), 'event': 'getBaike', 'detail': baikeid,
                 'type': '0'})
     doc = es.get(index='baike', doc_type='baike', id=baikeid)['_source']
-    doc['is_like'] += 1
-    es.index(index='baike', doc_type='baike', id=baikeid, body=doc)
+    post_content = doc['post_content']
+    new_content = re.sub(r'<img.*?>', changstr, post_content, count=0)
+    doc['post_content'] = new_content
+    listdoc = es.get(index='baikelist', doc_type='baikelist', id=baikeid)['_source']
+    listdoc['post_like'] += 1
+    es.index(index='baikelist', doc_type='baikelist', id=baikeid, body=listdoc)
     return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/test/getWendaList", methods=["POST"])
+def getWendaList():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        category_id = params['category_id']
+        scroll = params['scroll']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getWendaList', 'detail': category_id,
+                'type': '0'})
+    retdata = []
+    search = {'query': {'bool': {'filter': {"term": {'category_id': category_id}}}}}
+    if scroll:
+        try:
+            Docs = es.scroll(scroll_id=scroll, scroll="5m")
+        except:
+            Docs = es.search(index='wendalist', doc_type='wendalist', body=search, size=10, scroll="5m")
+
+    else:
+        Docs = es.search(index='wendalist', doc_type='wendalist', body=search, size=10, scroll="5m")
+    scroll = Docs['_scroll_id']
+    Docs = Docs['hits']['hits']
+    for doc in Docs:
+        doc = doc['_source']
+        retdata.append(doc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
+
+
+@app.route("/test/getWenda", methods=["POST"])
+def getWenda():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        wendaid = int(params['wendaid'])
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getWenda', 'detail': wendaid,
+                'type': '0'})
+    doc = es.get(index='wenda', doc_type='wenda', id=wendaid)['_source']
+    listdoc = es.get(index='wendalist', doc_type='wendalist', id=wendaid)['_source']
+    listdoc['post_like'] += 1
+    es.index(index='wendalist', doc_type='wendalist', id=wendaid, body=listdoc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/test/getXinliceshiList", methods=["POST"])
+def getXinliceshiList():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        category_id = params['category_id']
+        scroll = params['scroll']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getXinliceshiList', 'detail': category_id,
+                'type': '0'})
+    retdata = []
+    search = {'query': {'bool': {'filter': {"term": {'category_id': category_id}}}}}
+    if scroll:
+        try:
+            Docs = es.scroll(scroll_id=scroll, scroll="5m")
+        except:
+            Docs = es.search(index='xinliceshilist', doc_type='xinliceshilist', body=search, size=10, scroll="5m")
+
+    else:
+        Docs = es.search(index='xinliceshilist', doc_type='xinliceshilist', body=search, size=10, scroll="5m")
+    scroll = Docs['_scroll_id']
+    Docs = Docs['hits']['hits']
+    for doc in Docs:
+        doc = doc['_source']
+        retdata.append(doc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
+
+
+@app.route("/test/getXinliceshi", methods=["POST"])
+def getXinliceshi():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        ceshiid = int(params['ceshiid'])
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getXinliceshi', 'detail': 'getXinliceshi',
+                'type': '0'})
+    doc = es.get(index='xinliceshi', doc_type='xinliceshi', id=ceshiid)['_source']
+    doc['questions'] = json.loads(doc['questions'])
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/test/getCeshidaan", methods=["POST"])
+def getCeshidaan():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        ceshiid = int(params['ceshiid'])
+        ceshitype = params['ceshitype']
+        score = int(params['score'])
+        optionId = str(params['optionId'])
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getCeshidaan', 'detail': ceshiid,
+                'type': '0'})
+    doc = es.get(index='xinliceshiret', doc_type='xinliceshiret', id=ceshiid)['_source']
+    doc['data'] = json.loads(doc['data'])
+    retdata = {}
+    if ceshitype == 'jump':
+        if optionId in doc['data']:
+            retdata = doc['data'][optionId]
+        else:
+            randomindex = random.randint(0, len(doc['data'] - 1))
+            t = 0
+            for randomret in doc['data']:
+                if t == randomindex:
+                    retdata = doc['data'][randomret]
+                t += 1
+    else:
+        minscore = doc['min']
+        maxscore = doc['max']
+        jiange = (maxscore - minscore) / len(doc['data'])
+        if jiange != 0:
+            index = (score - minscore) // jiange
+        if index >= 0 and index < len(doc['data']):
+            retdata = doc['data'][index]
+        else:
+            randomindex = random.randint(0, len(doc['data'] - 1))
+            retdata = doc['data'][randomindex]
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
 if __name__ == "__main__":
