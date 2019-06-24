@@ -102,7 +102,7 @@ LAES=Lianaizhuli_ES()
 # LAES.escopy.delete(index='userinfo',doc_type='userinfo',id='oz7z64tQmf3SAoW7qqtxk9IitxZ0')#罗尼
 
 nowtime = time.strftime("%Y%m%d", time.localtime())
-# nowtime='20190521'
+# nowtime='20190617'
 def chaxun29():
     global nowtime
     search = {"query": {"match_all": {}}}

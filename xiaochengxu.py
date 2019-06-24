@@ -83,7 +83,7 @@ def decryptweixin(encrypted, weixinkey, weixiniv):
     return json.loads(decrypted[:-ord(decrypted[len(decrypted) - 1:])])
 
 
-@app.route("/api/xiaFashuruzhuangtai", methods=["POST"])
+@app.route("/test/xiaFashuruzhuangtai", methods=["POST"])
 def xiaFashuruzhuangtai():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -157,7 +157,7 @@ def faSongwenhouyu(openid):
         getKefuList('')
 
 
-@app.route("/api/faSongtext", methods=["POST"])
+@app.route("/test/faSongtext", methods=["POST"])
 def faSongtext():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -215,7 +215,7 @@ def faSongtext():
     return encrypt(json.dumps(html))
 
 
-@app.route("/api/upUnread", methods=["POST"])
+@app.route("/test/upUnread", methods=["POST"])
 def upUnread():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -231,7 +231,7 @@ def upUnread():
     return encrypt(json.dumps({'MSG': 'OK'}))
 
 
-@sockets.route('/api/getKefuList', methods=['POST'])
+@sockets.route('/test/getKefuList', methods=['POST'])
 def getKefuList(ws):
     global constws, sendws
     if type(ws) == type(""):
@@ -301,7 +301,7 @@ def getKefuList(ws):
             print(e)
 
 
-@app.route("/api/kefutuisong", methods=["GET", "POST"])
+@app.route("/test/kefutuisong", methods=["GET", "POST"])
 def kefutuisong():
     global MsgId
     if request.method == "GET":
@@ -370,7 +370,7 @@ def kefutuisong():
         return "SUCCESS"
 
 
-@app.route("/api/getChengGong", methods=["POST"])
+@app.route("/test/getChengGong", methods=["POST"])
 def getChengGong():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -576,7 +576,7 @@ def getChengGong():
     return encrypt(json.dumps({'MSG': 'OK', 'data': newhisdata}))
 
 
-@app.route("/api/getXiangqing", methods=["POST"])
+@app.route("/test/getXiangqing", methods=["POST"])
 def getXiangqing():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -661,7 +661,7 @@ def getXiangqing():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
-@app.route("/api/jinpushequ/getAdList", methods=["POST"])
+@app.route("/test/jinpushequ/getAdList", methods=["POST"])
 def getAdList():
     url = "https://mp.weixin.qq.com/s/m-xA4OfbGE_cEfnF3408qw"
     retdata = [{'title': '金浦社区简介', 'adurl': 'cloud://yuzikeji-f7d32f.7975-yuzikeji-f7d32f/gundong/shijiuda.jpg',
@@ -678,7 +678,7 @@ def getAdList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
-@app.route("/api/jinpushequ/getTubiaoList", methods=["POST"])
+@app.route("/test/jinpushequ/getTubiaoList", methods=["POST"])
 def getTubiaoList():
     retdata = [{'title': '社区公告', 'adurl': 'cloud://yuzikeji-f7d32f.7975-yuzikeji-f7d32f/tubiao/1.png'},
                {'title': '社区新闻', 'adurl': 'cloud://yuzikeji-f7d32f.7975-yuzikeji-f7d32f/tubiao/2.png'},
@@ -709,7 +709,7 @@ def getFcList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
-@app.route("/api/jinpushequ/getWenzhangList", methods=["POST"])
+@app.route("/test/jinpushequ/getWenzhangList", methods=["POST"])
 def getWenzhangList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -734,7 +734,7 @@ def getWenzhangList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
-@app.route("/api/jinpushequ/getWenzhang", methods=["POST"])
+@app.route("/test/jinpushequ/getWenzhang", methods=["POST"])
 def getWenzhang():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -752,5 +752,5 @@ def getWenzhang():
 if __name__ == "__main__":
     # server = pywsgi.WSGIServer(('127.0.0.1', 16888), app)
     # server.serve_forever()
-    http_serve = WSGIServer(("127.0.0.1", 16888), app, handler_class=WebSocketHandler)
+    http_serve = WSGIServer(("127.0.0.1", 18888), app, handler_class=WebSocketHandler)
     http_serve.serve_forever()

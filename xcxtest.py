@@ -67,6 +67,115 @@ islianmeng = 0
 issystem = 0
 
 
+@app.route("/api/getShouyekuai", methods=["POST"])
+def getShouyekuai():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getShouye', 'detail': 'getShouye',
+                'type': '0'})
+    return encrypt(json.dumps({'MSG': 'OK', 'lunbotu': [
+        {'title': '新用户', 'adurl': wangzhi + 'shouye/lunbotu/xinyonghu.png',
+         'type': 'html', 'url': 'https://mp.weixin.qq.com/s/CQqCd6tQ0Tv2AvE_-6aclQ'},
+        # {'title': '小程序使用介绍', 'adurl': 'https://www.lianaizhuli.com/shouye/shiyongjieshaobanner.jpg',
+        #  'type': 'ganhuo', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/shiyongjieshao.mp4',
+        #  'duration': '04:04', 'direction': '0'},
+        # {'title': '恋爱联盟招聘',
+        #  'adurl': 'https://www.lianaizhuli.com/shouye/zhaopinbanner.jpg',
+        #  'type': 'image', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/zhaopin1.jpg'},
+        # {'title': '迷男方法第一步', 'adurl': 'https://www.lianaizhuli.com/shouye/diyibu.jpg',
+        #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/6ouchJC7qurRuwe6MbIxbA'},
+        # {'title': '迷男方法第二步', 'adurl': 'https://www.lianaizhuli.com/shouye/dierbu.jpg',
+        #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/-3eouLbbREZFUHGxiJ6NHA'},
+        # {'title': '迷男方法第三步', 'adurl': 'https://www.lianaizhuli.com/shouye/disanbu.jpg',
+        #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/qnYR4DiOtmvcLcbfAVmuUA'},
+    ],
+                               'tubiao': [{'title': '土味情话', 'image': wangzhi + 'shouye/tubiao/tuweiqinghua.png',
+                                           'page': 'tuweiqinghualist'},
+                                          {'title': '撩妹套路', 'image': wangzhi + 'shouye/tubiao/liaomeitaolu.png',
+                                           'page': 'liaomeitaolulist'},
+                                          {'title': '情感百科', 'image': wangzhi + 'shouye/tubiao/qingganbaike.png',
+                                           'page': 'qingganbaike'},
+                                          {'title': '心理测试', 'image': wangzhi + 'shouye/tubiao/xinliceshi.png',
+                                           'page': 'xinliceshilist'}, ],
+                               'searchicon': wangzhi + 'shouye/search.png',
+                               'miaoshu': '复制女生聊天的话搜索获得最佳回复，轻轻一点即可复制',
+                               'tuijian': ['我有男朋友了', '你真自恋', '我去洗澡了', '表白', '哈哈'],
+                               }))
+
+
+@app.route("/api/getShouyeman", methods=["POST"])
+def getShouyeman():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getShouye', 'detail': 'getShouye',
+                'type': '0'})
+    kecheng = {'image': wangzhi + 'shouye/wenzi/kecheng.png', 'data': []}
+    xingxiangjianshe = {'image': wangzhi + 'shouye/wenzi/xingxiangjianshe.png', 'data': []}
+    qingganbaike = {'image': wangzhi + 'shouye/wenzi/qingganbaike.png', 'data': []}
+    liaomeishizhan = {'image': wangzhi + 'shouye/wenzi/liaomeishizhan.png', 'data': []}
+    sijiao = {'image': wangzhi + 'shouye/wenzi/sijiao.png', 'data': []}
+    xinliceshi = {'image': wangzhi + 'shouye/wenzi/xinliceshi.png', 'data': []}
+    search = {"query": {"match_all": {}}}
+    Docs = es.search(index='kechenglist', doc_type='kechenglist', body=search, size=3)['hits']['hits']
+    try:
+        goumaidoc = es.get(index='kechenggoumai', doc_type='kechenggoumai', id=openid)['_source']
+        goumaidoc['data'] = json.loads(goumaidoc['data'])
+    except:
+        goumaidoc = {}
+        goumaidoc['data'] = {}
+    for u, doc in enumerate(Docs):
+        doc = doc['_source']
+        doc['newimage'] = wangzhi + 'shouye/images/kecheng' + str(u + 1) + '.png';
+        if doc['id'] in goumaidoc['data']:
+            doc['yigoumai'] = 1
+        else:
+            doc['yigoumai'] = 0
+        kecheng['data'].append(doc)
+    Docs = es.search(index='xingxiangjianshe', doc_type='xingxiangjianshe', body=search, size=4)['hits']['hits']
+    for u, doc in enumerate(Docs):
+        doc = doc['_source']
+        doc['newimage'] = wangzhi + 'shouye/images/xingxiangjianshe' + str(u + 1) + '.png';
+        xingxiangjianshe['data'].append(doc)
+    Docs = es.search(index='baikelist', doc_type='baikelist', body=search, size=3)['hits']['hits']
+    for u, doc in enumerate(Docs):
+        doc = doc['_source']
+        doc['newimage'] = wangzhi + 'shouye/images/qingganbaike' + str(u + 1) + '.png';
+        qingganbaike['data'].append(doc)
+    Docs = es.search(index='liaomeishizhan', doc_type='liaomeishizhan', body=search, size=4)['hits']['hits']
+    for u, doc in enumerate(Docs):
+        doc = doc['_source']
+        doc['newimage'] = wangzhi + 'shouye/images/liaomeishizhan' + str(u + 1) + '.png';
+        liaomeishizhan['data'].append(doc)
+    Docs = es.search(index='sijiao', doc_type='sijiao', body=search, size=3)['hits']['hits']
+    for u, doc in enumerate(Docs):
+        doc = doc['_source']
+        doc['newimage'] = wangzhi + 'shouye/images/sijiao' + str(u + 1) + '.png';
+        sijiao['data'].append(doc)
+    Docs = es.search(index='xinliceshilist', doc_type='xinliceshilist', body=search, size=4)['hits']['hits']
+    for u, doc in enumerate(Docs):
+        doc = doc['_source']
+        doc['newimage'] = wangzhi + 'shouye/images/xinliceshi' + str(u + 1) + '.png';
+        xinliceshi['data'].append(doc)
+    return encrypt(json.dumps({'MSG': 'OK',
+                               'gengduotext': '更多',
+                               'gengduoicon': wangzhi + 'shouye/gengduo.png',
+                               'kecheng': kecheng,
+                               'xingxiangjianshe': xingxiangjianshe,
+                               'qingganbaike': qingganbaike,
+                               'liaomeishizhan': liaomeishizhan,
+                               'sijiao': sijiao,
+                               'xinliceshi': xinliceshi,
+                               }))
+
+
 def dict_to_xml(dict_data):
     '''
     dict to xml
@@ -145,7 +254,7 @@ def decryptweixin(encrypted, weixinkey, weixiniv):
     weixiniv = base64.b64decode(weixiniv)
     aes = AES.new(weixinkey, AES.MODE_CBC, weixiniv)
     decrypted = aes.decrypt(encrypted)
-    return json.loads(decrypted[:-ord(decrypted[len(decrypted) - 1:])])
+    return json.loads(decrypted[:-ord(decrypted[len(decrypted) - 1:])].decode('utf8'))
 
 
 def addKeyword(params):
@@ -167,7 +276,7 @@ def addKeyword(params):
         userKeyWordHisList[openid] = [inputValue]
 
 
-@app.route("/test/getOpenid", methods=["POST"])
+@app.route("/api/getOpenid", methods=["POST"])
 def getOpenid():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -204,7 +313,7 @@ def getOpenid():
     return encrypt(json.dumps({'MSG': 'OK', 'data': {'openid': response['openid']}}))
 
 
-@app.route("/test/checkOpenid", methods=["POST"])
+@app.route("/api/checkOpenid", methods=["POST"])
 def checkOpenid():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -226,7 +335,7 @@ def checkOpenid():
         return encrypt(json.dumps({'MSG': 'NO'}))
 
 
-@app.route("/test/searchHuashu", methods=["POST"])
+@app.route("/api/searchHuashu", methods=["POST"])
 def searchHuashu():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -258,7 +367,7 @@ def searchHuashu():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/searchGuanli", methods=["POST"])
+@app.route("/api/searchGuanli", methods=["POST"])
 def searchGuanli():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -290,7 +399,7 @@ def searchGuanli():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/searchBiaoqing", methods=["POST"])
+@app.route("/api/searchBiaoqing", methods=["POST"])
 def searchBiaoqing():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -322,7 +431,36 @@ def searchBiaoqing():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getMethodologyList", methods=["POST"])
+@app.route("/api/searchBaike", methods=["POST"])
+def searchBaike():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        query = params['query']
+        scroll = params['scroll']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    addKeyword(params)
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'searchBaike', 'detail': query, 'type': '0'})
+    retdata = []
+    search = {'query': {'match': {'title': query}}}
+    if scroll:
+        try:
+            Docs = es.scroll(scroll_id=scroll, scroll="5m")
+        except:
+            Docs = es.search(index='search', doc_type='search', body=search, size=10, scroll="5m")
+
+    else:
+        Docs = es.search(index='search', doc_type='search', body=search, size=10, scroll="5m")
+    scroll = Docs['_scroll_id']
+    Docs = Docs['hits']['hits']
+    for doc in Docs:
+        retdata.append(doc['_source'])
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
+
+
+@app.route("/api/getMethodologyList", methods=["POST"])
 def getMethodologyList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -353,7 +491,7 @@ def getMethodologyList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getHiswordList", methods=["POST"])
+@app.route("/api/getHiswordList", methods=["POST"])
 def getHiswordList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -368,7 +506,7 @@ def getHiswordList():
         return encrypt(json.dumps({'MSG': 'OK', 'data': []}))
 
 
-@app.route("/test/clearHiswords", methods=["POST"])
+@app.route("/api/clearHiswords", methods=["POST"])
 def clearHiswords():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -381,7 +519,7 @@ def clearHiswords():
     return encrypt(json.dumps({'MSG': 'OK'}))
 
 
-@app.route("/test/getRecommend", methods=["POST"])
+@app.route("/api/getRecommend", methods=["POST"])
 def getRecommend():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -394,7 +532,7 @@ def getRecommend():
     return encrypt(json.dumps({'MSG': 'OK', 'data': {'hotWordsList': hotWords, 'hotMethodsList': hotMethods}}))
 
 
-@app.route("/test/getWenzhangList", methods=["POST"])
+@app.route("/api/getWenzhangList", methods=["POST"])
 def getWenzhangList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -423,7 +561,7 @@ def getWenzhangList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getGanhuoList", methods=["POST"])
+@app.route("/api/getGanhuoList", methods=["POST"])
 def getGanhuoList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -452,7 +590,7 @@ def getGanhuoList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getXingxiangjiansheList", methods=["POST"])
+@app.route("/api/getXingxiangjiansheList", methods=["POST"])
 def getXingxiangjiansheList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -481,7 +619,24 @@ def getXingxiangjiansheList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getLiaomeishizhanList", methods=["POST"])
+@app.route("/api/getXingxiangjianshe", methods=["POST"])
+def getXingxiangjianshe():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        xingxiangjiansheid = params['xingxiangjiansheid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getXingxiangjianshe', 'detail': xingxiangjiansheid,
+                'type': '0'})
+    doc = es.get(index='xingxiangjianshe', doc_type='xingxiangjianshe', id=xingxiangjiansheid)['_source']
+    doc['count'] += 1
+    es.index(index='xingxiangjianshe', doc_type='xingxiangjianshe', id=xingxiangjiansheid, body=doc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/api/getLiaomeishizhanList", methods=["POST"])
 def getLiaomeishizhanList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -510,7 +665,90 @@ def getLiaomeishizhanList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/searchWenzhangList", methods=["POST"])
+@app.route("/api/getLiaomeishizhan", methods=["POST"])
+def getLiaomeishizhan():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        liaomeishizhanid = params['liaomeishizhanid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getLiaomeishizhan', 'detail': liaomeishizhanid,
+                'type': '0'})
+    doc = es.get(index='liaomeishizhan', doc_type='liaomeishizhan', id=liaomeishizhanid)['_source']
+    doc['count'] += 1
+    es.index(index='liaomeishizhan', doc_type='liaomeishizhan', id=liaomeishizhanid, body=doc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/api/getSijiaoList", methods=["POST"])
+def getSijiaoList():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis(
+        {'openid': openid, 'time': getTime(), 'event': 'getSijiaoList', 'detail': 'getSijiaoList',
+         'type': '0'})
+    retdata = []
+    search = {"query": {"match_all": {}}}
+    Docs = es.search(index='sijiao', doc_type='sijiao', body=search, size=10000)
+    Docs = Docs['hits']['hits']
+    for doc in Docs:
+        retdata.append(doc['_source'])
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
+
+
+@app.route("/api/getKechengList", methods=["POST"])
+def getKechengList():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis(
+        {'openid': openid, 'time': getTime(), 'event': 'getKechengList', 'detail': 'getKechengList',
+         'type': '0'})
+    retdata = []
+    search = {"query": {"match_all": {}}}
+    Docs = es.search(index='kechenglist', doc_type='kechenglist', body=search, size=10000)
+    Docs = Docs['hits']['hits']
+    try:
+        goumaidoc = es.get(index='kechenggoumai', doc_type='kechenggoumai', id=openid)['_source']
+        goumaidoc['data'] = json.loads(goumaidoc['data'])
+    except:
+        goumaidoc = {}
+        goumaidoc['data'] = {}
+    for doc in Docs:
+        doc = doc['_source']
+        if doc['id'] in goumaidoc['data']:
+            doc['yigoumai'] = 1
+        else:
+            doc['yigoumai'] = 0
+        retdata.append(doc)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
+
+
+@app.route("/api/getKecheng", methods=["POST"])
+def getKecheng():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        neirongid = params['neirongid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getKecheng', 'detail': neirongid,
+                'type': '0'})
+    doc = es.get(index='kecheng', doc_type='kecheng', id=neirongid)['_source']
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/api/searchWenzhangList", methods=["POST"])
 def searchWenzhangList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -538,7 +776,7 @@ def searchWenzhangList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/searchGanhuoList", methods=["POST"])
+@app.route("/api/searchGanhuoList", methods=["POST"])
 def searchGanhuoList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -566,7 +804,7 @@ def searchGanhuoList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getTuweiqinghuaList", methods=["POST"])
+@app.route("/api/getTuweiqinghuaList", methods=["POST"])
 def getTuweiqinghuaList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -594,7 +832,7 @@ def getTuweiqinghuaList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getTuweiqinghua", methods=["POST"])
+@app.route("/api/getTuweiqinghua", methods=["POST"])
 def getTuweiqinghua():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -609,7 +847,7 @@ def getTuweiqinghua():
     return encrypt(json.dumps({'MSG': 'OK', 'data': doc['_source']}))
 
 
-@app.route("/test/getPhoneNumber", methods=["POST"])
+@app.route("/api/getPhoneNumber", methods=["POST"])
 def getPhoneNumber():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -631,7 +869,7 @@ def getPhoneNumber():
     return encrypt(json.dumps({'MSG': 'OK', 'data': {'openid': response['openid']}}))
 
 
-@app.route("/test/get_prepay_id", methods=["POST"])
+@app.route("/api/get_prepay_id", methods=["POST"])
 def get_prepay_id():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -641,21 +879,17 @@ def get_prepay_id():
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    doc = es.get(index='userinfo', doc_type='userinfo', id=openid)
-    doc = doc['_source']
-    if 'phoneNumber' not in doc:
-        return encrypt(json.dumps({'MSG': 'nophoneNumber'}))
     url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
     prepaydata = {
         'appid': appid,
         'mch_id': mch_id,
         'nonce_str': ''.join(random.sample(string.ascii_letters + string.digits, 32)),
         'body': detail,
-        'attach': json.dumps({'zhifutype': zhifutype, 'detail': detail}),
+        'attach': json.dumps({'zhifutype': zhifutype, 'detail': detail}, ensure_ascii=False),
         'out_trade_no': str(int(time.time())) + '_' + str((random.randint(1000000, 9999999))),
         'total_fee': total_fees[zhifutype],
         'spbill_create_ip': request.remote_addr,
-        'notify_url': "https://www.lianaizhuli.com/api/paynotify",
+        'notify_url': wangzhi + "api/paynotify",
         'trade_type': "JSAPI",
         'openid': openid,
     }
@@ -680,10 +914,14 @@ def get_prepay_id():
     paySign = hashlib.md5(stringSignTemp.encode('utf8')).hexdigest()
     paySign_data['paySign'] = paySign
     paySign_data.pop('appId')
+    doc = es.get(index='userinfo', doc_type='userinfo', id=openid)
+    doc = doc['_source']
+    if 'phoneNumber' not in doc:
+        return encrypt(json.dumps({'MSG': 'nophoneNumber', 'data': paySign_data}))
     return encrypt(json.dumps({'MSG': 'OK', 'data': paySign_data}))
 
 
-@app.route("/test/paynotify", methods=["POST"])
+@app.route("/api/paynotify", methods=["POST"])
 def paynotify():
     zhifures = xml_to_dict(request.stream.read().decode('utf8'))
     sign = zhifures['sign']
@@ -731,7 +969,7 @@ def paynotify():
     return dict_to_xml({'return_code': 'SUCCESS', 'return_msg': 'OK'})
 
 
-@app.route("/test/getTequan", methods=["POST"])
+@app.route("/api/getTequan", methods=["POST"])
 def getTequan():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -747,7 +985,7 @@ def getTequan():
                                                         time.localtime(doc['_source']['viptime']))}))
 
 
-@app.route("/test/getJifen", methods=["POST"])
+@app.route("/api/getJifen", methods=["POST"])
 def getJifen():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -761,10 +999,11 @@ def getJifen():
         adduserhis({'openid': openid, 'time': getTime(), 'event': 'getJifen', 'detail': 'getJifen',
                     'type': '0'})
     return encrypt(json.dumps({'MSG': 'OK', 'data': {'vipdengji': doc['_source']['vipdengji'],
-                                                     'jifen': int(doc['_source']['xiaofeizonge'] * 0.01)}}))
+                                                     'jifen': int(doc['_source']['xiaofeizonge'] * 0.01),
+                                                     'wenhouyu': 'HI，欢迎您~'}}))
 
 
-@app.route("/test/getDingdan", methods=["POST"])
+@app.route("/api/getDingdan", methods=["POST"])
 def getDingdan():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -789,7 +1028,7 @@ def getDingdan():
         return encrypt(json.dumps({'MSG': 'OK', 'data': []}))
 
 
-@app.route("/test/getIslianmeng", methods=["POST"])
+@app.route("/api/getIslianmeng", methods=["POST"])
 def getIslianmeng():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -813,7 +1052,7 @@ def getIslianmeng():
             return encrypt(json.dumps({'MSG': 'OK', 'issystem': 1, 'islianmeng': islianmeng}))
 
 
-@app.route("/test/setJilu", methods=["POST"])
+@app.route("/api/setJilu", methods=["POST"])
 def setJilu():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -844,115 +1083,7 @@ def setJilu():
     return encrypt(json.dumps({'MSG': 'OK'}))
 
 
-@app.route("/test/getShouye", methods=["POST"])
-def getShouye():
-    try:
-        params = json.loads(decrypt(request.stream.read()))
-        openid = params['openid']
-    except Exception as e:
-        logger.error(e)
-        return json.dumps({'MSG': '警告！非法入侵！！！'})
-    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getShouye', 'detail': 'getShouye',
-                'type': '0'})
-    return encrypt(json.dumps({'MSG': 'OK', 'lunbotu': [
-        {'title': '新用户', 'adurl': wangzhi + 'shouye/lunbotu/xinyonghu.png',
-         'type': 'html', 'url': 'https://mp.weixin.qq.com/s/CQqCd6tQ0Tv2AvE_-6aclQ'},
-        # {'title': '小程序使用介绍', 'adurl': 'https://www.lianaizhuli.com/shouye/shiyongjieshaobanner.jpg',
-        #  'type': 'ganhuo', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/shiyongjieshao.mp4',
-        #  'duration': '04:04', 'direction': '0'},
-        # {'title': '恋爱联盟招聘',
-        #  'adurl': 'https://www.lianaizhuli.com/shouye/zhaopinbanner.jpg',
-        #  'type': 'image', 'url': 'cloud://lianailianmeng-086596.6c69-lianailianmeng-086596/shouye/zhaopin1.jpg'},
-        # {'title': '迷男方法第一步', 'adurl': 'https://www.lianaizhuli.com/shouye/diyibu.jpg',
-        #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/6ouchJC7qurRuwe6MbIxbA'},
-        # {'title': '迷男方法第二步', 'adurl': 'https://www.lianaizhuli.com/shouye/dierbu.jpg',
-        #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/-3eouLbbREZFUHGxiJ6NHA'},
-        # {'title': '迷男方法第三步', 'adurl': 'https://www.lianaizhuli.com/shouye/disanbu.jpg',
-        #  'type': 'html', 'url': 'https://mp.weixin.qq.com/s/qnYR4DiOtmvcLcbfAVmuUA'},
-    ],
-                               'tubiao': [{'title': '课程精选', 'image': wangzhi + 'shouye/tubiao/kechengjingxuan.png',
-                                           'page': 'kecheng'},
-                                          {'title': '土味情话', 'image': wangzhi + 'shouye/tubiao/tuweiqinghua.png',
-                                           'page': 'twqh'},
-                                          {'title': '撩妹套路', 'image': wangzhi + 'shouye/tubiao/liaomeitaolu.png',
-                                           'page': 'lmtl'},
-                                          {'title': '情感百科', 'image': wangzhi + 'shouye/tubiao/qingganbaike.png',
-                                           'page': 'qingganbaike'}, ],
-                               'searchicon': wangzhi + 'shouye/search.png',
-                               'miaoshu': '复制女生聊天的话搜索获得最佳回复，轻轻一点即可复制',
-                               'gengduoicon': wangzhi + 'shouye/gengduo.png',
-                               'tuijian': ['我有男朋友了', '你真自恋', '我去洗澡了', '表白', '哈哈'],
-                               'kecheng': {'image': wangzhi + 'shouye/wenzi/kecheng.png', 'gengduo': '更多', 'data': [
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng1.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng2.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/kecheng3.png',
-                                    'num': 12345}, ]},
-                               'xingxiangjianshe': {'image': wangzhi + 'shouye/wenzi/xingxiangjianshe.png',
-                                                    'gengduo': '更多', 'data': [
-                                       {'title': '打造让女生着迷的朋友圈',
-                                        'image': wangzhi + 'shouye/images/xingxiangjianshe1.png',
-                                        'num': 12345},
-                                       {'title': '打造让女生着迷的朋友圈',
-                                        'image': wangzhi + 'shouye/images/xingxiangjianshe2.png',
-                                        'num': 12345},
-                                       {'title': '打造让女生着迷的朋友圈',
-                                        'image': wangzhi + 'shouye/images/xingxiangjianshe3.png',
-                                        'num': 12345},
-                                       {'title': '打造让女生着迷的朋友圈',
-                                        'image': wangzhi + 'shouye/images/xingxiangjianshe4.png',
-                                        'num': 12345}, ]},
-                               'qingganbaike': {'image': wangzhi + 'shouye/wenzi/qingganbaike.png', 'gengduo': '更多',
-                                                'data': [
-                                                    {'title': '打造让女生着迷的朋友圈',
-                                                     'image': wangzhi + 'shouye/images/qingganbaike1.png',
-                                                     'num': 12345},
-                                                    {'title': '打造让女生着迷的朋友圈',
-                                                     'image': wangzhi + 'shouye/images/qingganbaike2.png',
-                                                     'num': 12345},
-                                                    {'title': '打造让女生着迷的朋友圈',
-                                                     'image': wangzhi + 'shouye/images/qingganbaike3.png',
-                                                     'num': 12345}, ]},
-                               'liaomeishizhan': {'image': wangzhi + 'shouye/wenzi/liaomeishizhan.png', 'gengduo': '更多',
-                                                  'data': [
-                                                      {'title': '打造让女生着迷的朋友圈',
-                                                       'image': wangzhi + 'shouye/images/liaomeishizhan1.png',
-                                                       'num': 12345},
-                                                      {'title': '打造让女生着迷的朋友圈',
-                                                       'image': wangzhi + 'shouye/images/liaomeishizhan2.png',
-                                                       'num': 12345},
-                                                      {'title': '打造让女生着迷的朋友圈',
-                                                       'image': wangzhi + 'shouye/images/liaomeishizhan3.png',
-                                                       'num': 12345},
-                                                      {'title': '打造让女生着迷的朋友圈',
-                                                       'image': wangzhi + 'shouye/images/liaomeishizhan4.png',
-                                                       'num': 12345}, ]},
-                               'sijiao': {'image': wangzhi + 'shouye/wenzi/sijiao.png', 'gengduo': '更多', 'data': [
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao1.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao2.png',
-                                    'num': 12345},
-                                   {'title': '打造让女生着迷的朋友圈', 'image': wangzhi + 'shouye/images/sijiao3.png',
-                                    'num': 12345}, ]},
-                               'xinliceshi': {'image': wangzhi + 'shouye/wenzi/xinliceshi.png', 'gengduo': '更多',
-                                              'data': [
-                                                  {'title': '打造让女生着迷的朋友圈',
-                                                   'image': wangzhi + 'shouye/images/xinliceshi1.png',
-                                                   'num': 12345},
-                                                  {'title': '打造让女生着迷的朋友圈',
-                                                   'image': wangzhi + 'shouye/images/xinliceshi2.png',
-                                                   'num': 12345},
-                                                  {'title': '打造让女生着迷的朋友圈',
-                                                   'image': wangzhi + 'shouye/images/xinliceshi3.png',
-                                                   'num': 12345},
-                                                  {'title': '打造让女生着迷的朋友圈',
-                                                   'image': wangzhi + 'shouye/images/xinliceshi4.png',
-                                                   'num': 12345}, ]},
-                               }))
-
-
-@app.route("/test/getQingganbaike", methods=["POST"])
+@app.route("/api/getQingganbaike", methods=["POST"])
 def getQingganbaike():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -1023,7 +1154,7 @@ def getQingganbaike():
                                     'category_name': '异地恋', 'category_id': 15}, ], }))
 
 
-@app.route("/test/getQingganbaikeList", methods=["POST"])
+@app.route("/api/getQingganbaikeList", methods=["POST"])
 def getQingganbaikeList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -1058,28 +1189,31 @@ def changstr(matched):
         re.search('src=\\".*?"', str(matched.group(0))).group(0)) + '/>'
 
 
-@app.route("/test/getBaike", methods=["POST"])
+@app.route("/api/getBaike", methods=["POST"])
 def getBaike():
     try:
         params = json.loads(decrypt(request.stream.read()))
         openid = params['openid']
-        baikeid = int(params['baikeid'])
+        baikeid = params['baikeid']
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
     adduserhis({'openid': openid, 'time': getTime(), 'event': 'getBaike', 'detail': baikeid,
                 'type': '0'})
     doc = es.get(index='baike', doc_type='baike', id=baikeid)['_source']
-    post_content = doc['post_content']
-    new_content = re.sub(r'<img.*?>', changstr, post_content, count=0)
-    doc['post_content'] = new_content
+    try:
+        content = doc['content']
+        new_content = re.sub(r'<img.*?>', changstr, content, count=0)
+        doc['content'] = new_content
+    except:
+        None
     listdoc = es.get(index='baikelist', doc_type='baikelist', id=baikeid)['_source']
-    listdoc['post_like'] += 1
+    listdoc['count'] += 1
     es.index(index='baikelist', doc_type='baikelist', id=baikeid, body=listdoc)
     return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
 
 
-@app.route("/test/getWendaList", methods=["POST"])
+@app.route("/api/getWendaList", methods=["POST"])
 def getWendaList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -1109,12 +1243,12 @@ def getWendaList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getWenda", methods=["POST"])
+@app.route("/api/getWenda", methods=["POST"])
 def getWenda():
     try:
         params = json.loads(decrypt(request.stream.read()))
         openid = params['openid']
-        wendaid = int(params['wendaid'])
+        wendaid = params['wendaid']
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
@@ -1122,12 +1256,22 @@ def getWenda():
                 'type': '0'})
     doc = es.get(index='wenda', doc_type='wenda', id=wendaid)['_source']
     listdoc = es.get(index='wendalist', doc_type='wendalist', id=wendaid)['_source']
-    listdoc['post_like'] += 1
+    listdoc['count'] += 1
     es.index(index='wendalist', doc_type='wendalist', id=wendaid, body=listdoc)
-    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+    dianzan = 0
+    shoucang = 0
+    try:
+        newdoc = es.get(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid)['_source']
+        newdoc = json.loads(newdoc['wenda'])
+        if baikeid in newdoc:
+            dianzan = newdoc[baikeid]['dianzan']
+            shoucang = newdoc[baikeid]['shoucang']
+    except:
+        None
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc, 'dianzan': dianzan, 'shoucang': shoucang}))
 
 
-@app.route("/test/getXinliceshiList", methods=["POST"])
+@app.route("/api/getXinliceshiList", methods=["POST"])
 def getXinliceshiList():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -1157,7 +1301,7 @@ def getXinliceshiList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
-@app.route("/test/getXinliceshi", methods=["POST"])
+@app.route("/api/getXinliceshi", methods=["POST"])
 def getXinliceshi():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -1166,14 +1310,24 @@ def getXinliceshi():
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getXinliceshi', 'detail': 'getXinliceshi',
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'getXinliceshi', 'detail': ceshiid,
                 'type': '0'})
     doc = es.get(index='xinliceshi', doc_type='xinliceshi', id=ceshiid)['_source']
     doc['questions'] = json.loads(doc['questions'])
-    return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+    dianzan = 0
+    shoucang = 0
+    try:
+        newdoc = es.get(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid)['_source']
+        newdoc = json.loads(newdoc['xinliceshi'])
+        if baikeid in newdoc:
+            dianzan = newdoc[baikeid]['dianzan']
+            shoucang = newdoc[baikeid]['shoucang']
+    except:
+        None
+    return encrypt(json.dumps({'MSG': 'OK', 'data': doc, 'dianzan': dianzan, 'shoucang': shoucang}))
 
 
-@app.route("/test/getCeshidaan", methods=["POST"])
+@app.route("/api/getCeshidaan", methods=["POST"])
 def getCeshidaan():
     try:
         params = json.loads(decrypt(request.stream.read()))
@@ -1205,15 +1359,227 @@ def getCeshidaan():
         maxscore = doc['max']
         jiange = (maxscore - minscore) / len(doc['data'])
         if jiange != 0:
-            index = (score - minscore) // jiange
+            index = int((score - minscore) // jiange)
         if index >= 0 and index < len(doc['data']):
             retdata = doc['data'][index]
         else:
-            randomindex = random.randint(0, len(doc['data'] - 1))
+            randomindex = random.randint(0, len(doc['data']) - 1)
             retdata = doc['data'][randomindex]
+    newdoc = es.get(index='xinliceshilist', doc_type='xinliceshilist', id=ceshiid)['_source']
+    newdoc['count'] += 1
+    es.index(index='xinliceshilist', doc_type='xinliceshilist', id=ceshiid, body=newdoc)
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
+@app.route("/api/setDianzanshoucangshu", methods=["POST"])
+def setDianzanshoucangshu():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        doctype = params['doctype']
+        docid = params['docid']
+        dianzanshu = params['dianzanshu']
+        shoucangshu = params['shoucangshu']
+        dianzan = params['dianzan']
+        shoucang = params['shoucang']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'setDianzanshoucangshu', 'detail': doctype,
+                'type': '0'})
+    doc = es.get(index=doctype, doc_type=doctype, id=docid)['_source']
+    doc['dianzan'] = dianzanshu
+    doc['shoucangshu'] = shoucangshu
+    es.index(index=doctype, doc_type=doctype, id=docid, body=doc)
+    wendang = {}
+    wendang['doctype'] = doctype
+    wendang['docid'] = docid
+    wendang['dianzan'] = dianzan
+    wendang['shoucang'] = shoucang
+    wendang['title'] = doc['title']
+    wendang['image'] = doc['image']
+    try:
+        newdoc = es.get(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid)['_source']
+        flag = 1
+        for u, newwendang in enumerate(newdoc['data']):
+            if newwendang['docid'] == docid and newwendang['doctype'] == doctype:
+                newdoc['data'][u] = wendang
+                flag = 0
+                break
+        if flag: newdoc['data'].append(wendang)
+        es.index(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid,
+                 body=newdoc)
+    except:
+        newdoc = [wendang]
+        es.index(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid,
+                 body={'data': newdoc})
+    return encrypt(json.dumps({'MSG': 'OK'}))
+
+
+@app.route("/api/getDianzanshoucangList", methods=["POST"])
+def getDianzanshoucangList():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis(
+        {'openid': openid, 'time': getTime(), 'event': 'getDianzanshoucangList', 'detail': 'getDianzanshoucangList',
+         'type': '0'})
+    retdata = []
+    try:
+        doc = es.get(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid)['_source']
+        retdata = doc['data']
+    except:
+        None
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
+
+
+@app.route("/api/getDianzanshoucang", methods=["POST"])
+def getDianzanshoucang():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        doctype = params['doctype']
+        docid = params['docid']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis(
+        {'openid': openid, 'time': getTime(), 'event': 'getDianzanshoucang', 'detail': 'getDianzanshoucang',
+         'type': '0'})
+    dianzan = 0
+    shoucang = 0
+    try:
+        doc = es.get(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid)['_source']
+        for newdoc in doc['data']:
+            if newdoc['docid'] == docid and newdoc['doctype'] == doctype:
+                dianzan = newdoc['dianzan']
+                shoucang = newdoc['shoucang']
+    except:
+        None
+    return encrypt(json.dumps({'MSG': 'OK', 'dianzan': dianzan, 'shoucang': shoucang}))
+
+
+@app.route("/api/setDianzanshoucang", methods=["POST"])
+def setDianzanshoucang():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        DianzanshoucangList = params['DianzanshoucangList']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    adduserhis(
+        {'openid': openid, 'time': getTime(), 'event': 'setDianzanshoucang', 'detail': 'setDianzanshoucang',
+         'type': '0'})
+    es.index(index='dianzanshoucang', doc_type='dianzanshoucang', id=openid, body={'data': DianzanshoucangList})
+    return encrypt(json.dumps({'MSG': 'OK'}))
+
+
+@app.route("/api/get_kechengprepay_id", methods=["POST"])
+def get_kechengprepay_id():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        kechengid = params['kechengid']
+        detail = params['detail']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    kechengjiage = int(es.get(index='kechenglist', doc_type='kechenglist', id=kechengid)['_source']['jiage'] * 100)
+    url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
+    prepaydata = {
+        'appid': appid,
+        'mch_id': mch_id,
+        'nonce_str': ''.join(random.sample(string.ascii_letters + string.digits, 32)),
+        'body': detail,
+        'attach': json.dumps({'kechengid': kechengid, 'detail': detail}, ensure_ascii=False),
+        'out_trade_no': str(int(time.time())) + '_' + str((random.randint(1000000, 9999999))),
+        'total_fee': kechengjiage,
+        'spbill_create_ip': request.remote_addr,
+        'notify_url': wangzhi + "api/kechengpaynotify",
+        'trade_type': "JSAPI",
+        'openid': openid,
+    }
+    stringA = '&'.join(["{0}={1}".format(k, prepaydata.get(k)) for k in sorted(prepaydata)])
+    stringSignTemp = '{0}&key={1}'.format(stringA, merchant_key)
+    sign = hashlib.md5(stringSignTemp.encode('utf8')).hexdigest()
+    prepaydata['sign'] = sign
+    req = urllib.request.Request(url, dict_to_xml(prepaydata).encode('utf8'),
+                                 headers={'Content-Type': 'application/xml'})
+    result = urllib.request.urlopen(req, timeout=10).read().decode('utf8')
+    result = xml_to_dict(result)
+    prepay_id = result['prepay_id']
+    paySign_data = {
+        'appId': appid,
+        'timeStamp': str(int(time.time())),
+        'nonceStr': result['nonce_str'],
+        'package': 'prepay_id={0}'.format(prepay_id),
+        'signType': 'MD5'
+    }
+    stringA = '&'.join(["{0}={1}".format(k, paySign_data.get(k)) for k in sorted(paySign_data)])
+    stringSignTemp = '{0}&key={1}'.format(stringA, merchant_key)
+    paySign = hashlib.md5(stringSignTemp.encode('utf8')).hexdigest()
+    paySign_data['paySign'] = paySign
+    paySign_data.pop('appId')
+    doc = es.get(index='userinfo', doc_type='userinfo', id=openid)
+    doc = doc['_source']
+    if 'phoneNumber' not in doc:
+        return encrypt(json.dumps({'MSG': 'nophoneNumber', 'data': paySign_data}))
+    return encrypt(json.dumps({'MSG': 'OK', 'data': paySign_data}))
+
+
+@app.route("/api/kechengpaynotify", methods=["POST"])
+def kechengpaynotify():
+    zhifures = xml_to_dict(request.stream.read().decode('utf8'))
+    sign = zhifures['sign']
+    zhifures.pop('sign')
+    stringA = '&'.join(["{0}={1}".format(k, zhifures.get(k)) for k in sorted(zhifures)])
+    stringSignTemp = '{0}&key={1}'.format(stringA, merchant_key)
+    paySign = hashlib.md5(stringSignTemp.encode('utf8')).hexdigest().upper()
+    if sign != paySign:
+        return dict_to_xml({'return_code': 'FAIL', 'return_msg': 'SIGNERROR'})
+    zhifudata = [zhifures]
+    isnew = 1
+    flag = 1
+    try:
+        doc = es.get(index='userzhifu', doc_type='userzhifu', id=zhifures['openid'])
+        isnew = 0
+        for line in doc['_source']['zhifudata']:
+            if line['transaction_id'] == zhifudata[0]['transaction_id']:
+                flag = 0
+        if flag:
+            zhifudata += doc['_source']['zhifudata']
+    except Exception as e:
+        logger.error(e)
+    if isnew or (isnew == 0 and flag == 1):
+        es.index(index='userzhifu', doc_type='userzhifu', id=zhifures['openid'],
+                 body={'openid': zhifures['openid'], 'zhifudata': zhifudata, 'updatatime': zhifures['time_end']})
+        try:
+            kechengid = json.loads(zhifures['attach'])['kechengid']
+            try:
+                goumaidoc = es.get(index='kechenggoumai', doc_type='kechenggoumai', id=zhifures['openid'])['_source']
+                goumaidoc['data'] = json.loads(goumaidoc['data'])
+                goumaidoc['data'][kechengid] = 1
+            except:
+                goumaidoc = {}
+                goumaidoc['openid'] = zhifures['openid']
+                goumaidoc['data'] = {}
+                goumaidoc['data'][kechengid] = 1
+            goumaidoc['data'] = json.dumps(goumaidoc['data'])
+            es.index(index='kechenggoumai', doc_type='kechenggoumai', id=zhifures['openid'], body=goumaidoc)
+            doc = es.get(index='userinfo', doc_type='userinfo', id=zhifures['openid'])
+            newdoc = doc['_source']
+            newdoc['xiaofeicishu'] += 1
+            newdoc['xiaofeizonge'] += int(zhifures['total_fee'])
+            es.index(index='userinfo', doc_type='userinfo', id=zhifures['openid'], body=newdoc)
+        except Exception as e:
+            logger.error(e)
+    return dict_to_xml({'return_code': 'SUCCESS', 'return_msg': 'OK'})
+
+
 if __name__ == "__main__":
-    server = pywsgi.WSGIServer(('127.0.0.1', 18888), app)
+    server = pywsgi.WSGIServer(('127.0.0.1', 16888), app)
     server.serve_forever()
