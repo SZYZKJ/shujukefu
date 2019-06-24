@@ -367,6 +367,38 @@ def searchHuashu():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
 
 
+@app.route("/api/searchLiaomeihuashu", methods=["POST"])
+def searchLiaomeihuashu():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        openid = params['openid']
+        query = params['query']
+        scroll = params['scroll']
+    except Exception as e:
+        logger.error(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    check_user_res = check_user(openid)
+    if check_user_res == 0:
+        return encrypt(json.dumps({'MSG': 'LIMIT'}))
+    addKeyword(params)
+    adduserhis({'openid': openid, 'time': getTime(), 'event': 'searchLiaomeihuashu', 'detail': query, 'type': '0'})
+    retdata = []
+    search = {'query': {'match': {'chat_name': query}}}
+    if scroll:
+        try:
+            Docs = es.scroll(scroll_id=scroll, scroll="5m")
+        except:
+            Docs = es.search(index='liaomeihuashu', doc_type='liaomeihuashu', body=search, size=10, scroll="5m")
+
+    else:
+        Docs = es.search(index='liaomeihuashu', doc_type='liaomeihuashu', body=search, size=10, scroll="5m")
+    scroll = Docs['_scroll_id']
+    Docs = Docs['hits']['hits']
+    for doc in Docs:
+        retdata.append(doc['_source'])
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata, 'scroll': scroll}))
+
+
 @app.route("/api/searchGuanli", methods=["POST"])
 def searchGuanli():
     try:
@@ -527,9 +559,9 @@ def getRecommend():
     except Exception as e:
         logger.error(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    hotWords = ['自恋', '厉害', '睡觉', '生气', '干嘛', '烦', '哈哈', '好吧', '介绍', '丑', '表白', '呵呵']
-    hotMethods = ['开场白', '赞美', '拉升关系', '高价值展示', '幽默搞笑', '冷读', '推拉', '角色扮演', '框架', '打压', '进挪', '背景植入']
-    return encrypt(json.dumps({'MSG': 'OK', 'data': {'hotWordsList': hotWords, 'hotMethodsList': hotMethods}}))
+    hotWords = ['自恋', '厉害', '睡觉', '生气', '干嘛', '烦', '哈哈', '好吧', '介绍', '丑', '表白', '呵呵', '开场白', '赞美', '拉升关系', '高价值展示',
+                '幽默搞笑', '冷读', '推拉', '角色扮演', '框架', '打压', '进挪', '背景植入']
+    return encrypt(json.dumps({'MSG': 'OK', 'data': {'hotWordsList': hotWords}}))
 
 
 @app.route("/api/getWenzhangList", methods=["POST"])

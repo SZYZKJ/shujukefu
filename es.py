@@ -17,6 +17,7 @@ class Lianaizhuli_ES:
 
     def __init__(self):
         # self.es.indices.delete(index='huashu')
+        # self.es.indices.delete(index='liaomeihuashu')
         # self.es.indices.delete(index='guanli')
         # self.es.indices.delete(index='methodology')
         # self.es.indices.delete(index='wenzhang')
@@ -38,7 +39,7 @@ class Lianaizhuli_ES:
         # self.es.indices.delete(index='dianzanshoucang')
         # self.es.indices.delete(index='search')
         # self.es.indices.delete(index='kechenggoumai')
-        if self.es.indices.exists(index='kechenggoumai') is not True:
+        if self.es.indices.exists(index='liaomeihuashu') is not True:
             lianaizhuli_index = {
                 "settings": {
                     "number_of_shards": 1,
@@ -60,6 +61,8 @@ class Lianaizhuli_ES:
                     }
                 }
             }
+            ret_data = self.es.indices.create(index='liaomeihuashu', body=lianaizhuli_index, ignore=400)
+            print(ret_data)
             # ret_data = self.es.indices.create(index='huashu', body=lianaizhuli_index, ignore=400)
             # print(ret_data)
             # ret_data = self.es.indices.create(index='guanli', body=lianaizhuli_index, ignore=400)
@@ -106,9 +109,21 @@ class Lianaizhuli_ES:
             # print(ret_data)
             # ret_data = self.es.indices.create(index='search', body=lianaizhuli_index, ignore=400)
             # print(ret_data)
-            ret_data = self.es.indices.create(index='kechenggoumai', body=lianaizhuli_index, ignore=400)
-            print(ret_data)
+            # ret_data = self.es.indices.create(index='kechenggoumai', body=lianaizhuli_index, ignore=400)
+            # print(ret_data)
             actions = []
+            with open('liaomeihuashu.json', 'r') as f:
+                for line in f:
+                    item = json.loads(line)
+                    action = {
+                        "_index": "liaomeihuashu",
+                        "_type": "liaomeihuashu",
+                        "_source": item
+                    }
+                    actions.append(action)
+            while len(actions):
+                helpers.bulk(self.es, actions[:blocklen])
+                actions=actions[blocklen:]
             # with open('huashu.csv', 'r') as f:
             #     for line in csv.reader(f):
             #         huashulist = line[1].strip().split('\n')
