@@ -1,1 +1,14 @@
 nohup: ignoring input
+127.0.0.1 - - [2019-06-25 06:06:06] "POST /api/getShouyeman HTTP/1.1" 200 34999 0.031338
+127.0.0.1 - - [2019-06-25 06:06:07] "POST /api/getShouyekuai HTTP/1.1" 200 1654 0.001310
+127.0.0.1 - - [2019-06-25 06:06:07] "POST /api/getShouyeman HTTP/1.1" 200 34999 0.028023
+127.0.0.1 - - [2019-06-25 06:06:07] "POST /api/checkOpenid HTTP/1.1" 200 140 0.020504
+127.0.0.1 - - [2019-06-25 06:06:07] "POST /api/getIslianmeng HTTP/1.1" 200 180 0.019422
+127.0.0.1 - - [2019-06-25 06:07:29] "POST /api/getShouyeman HTTP/1.1" 200 34999 0.026229
+127.0.0.1 - - [2019-06-25 06:07:31] "POST /api/getQingganbaike HTTP/1.1" 200 7054 0.001228
+127.0.0.1 - - [2019-06-25 06:07:32] "POST /api/getWendaList HTTP/1.1" 200 5218 0.287378
+127.0.0.1 - - [2019-06-25 06:07:35] "POST /api/getWendaList HTTP/1.1" 200 2722 0.005400
+127.0.0.1 - - [2019-06-25 06:07:37] "POST /api/getWendaList HTTP/1.1" 200 269 0.014253
+GET http://119.29.67.239:9218/dianzanshoucang/dianzanshoucang/oz7z64liSPmlzHped8ATXf23jqyI [status:404 request:0.003s]
+127.0.0.1 - - [2019-06-25 06:07:39] "POST /api/getWenda HTTP/1.1" 200 7502 0.230805
+GET http://119.29.67.239:9218/dianzanshoucang/dianzanshoucang/oz7z64liSPmlzHped8ATXf23jqyI [status:404 request:0.003s]

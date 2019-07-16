@@ -31,8 +31,9 @@ sockets = Sockets(app)
 CORS(app, supports_credentials=True)
 es = Elasticsearch([{"host": "119.29.67.239", "port": 9218, "timeout": 3600}])
 chenggonges = Elasticsearch([{"host": "182.254.227.188", "port": 9218, "timeout": 3600}])
-histype = {'searchHuashu': 0, 'searchGuanli': 0, 'searchBiaoqing': 0, 'getMethodologyList': 0, 'setJilu': 0,
-           'getTuweiqinghua': 0, }
+histype = {'searchLiaomeihuashu': 0, 'searchBiaoqing': 0, 'searchBaike': 0, 'getLiaomeitaoluList': 0,
+           'getXingxiangjianshe': 0, 'getLiaomeishizhan': 0, 'getKecheng': 0, 'getTuweiqinghua': 0, 'getBaike': 0,
+           'getWenda': 0, 'getCeshidaan': 0, 'setDianzanshoucang': 0, }
 key = "pangyuming920318"
 iv = "abcdefabcdefabcd"
 appid = 'wxa9ef833cef143ce1'
@@ -56,7 +57,20 @@ f.close()
 constws = {}
 sendws = {}
 MsgId = {}
-
+access_tokentime=[]
+def getaccess_token():
+    access_token = ''
+    if len(access_tokentime) == 0 or access_tokentime[1] < int(time.time()):
+        url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + appid + '&secret=' + secret
+        response = requests.get(url)
+        response = response.json()
+        access_token = response['access_token']
+        access_tokentime = []
+        access_tokentime.append(access_token)
+        access_tokentime.append(int(time.time() + 3600))
+    else:
+        access_token = access_tokentime[0]
+    return access_token
 
 def getTime():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -92,10 +106,7 @@ def xiaFashuruzhuangtai():
     except Exception as e:
         print(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + appid + '&secret=' + secret
-    reponse = urllib.request.Request(url=url)
-    html = urllib.request.urlopen(reponse).read().decode('utf-8')
-    access_token = json.loads(html)['access_token']
+    access_token=getaccess_token()
     url = 'https://api.weixin.qq.com/cgi-bin/message/custom/typing?access_token=' + access_token
     values = {
         "touser": openid,
@@ -109,10 +120,7 @@ def xiaFashuruzhuangtai():
 
 def faSongwenhouyu(openid):
     textvalue = "您好，我是恋爱联盟客服薇薇，很高兴为您服务。"
-    url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + appid + '&secret=' + secret
-    reponse = urllib.request.Request(url=url)
-    html = urllib.request.urlopen(reponse).read().decode('utf-8')
-    access_token = json.loads(html)['access_token']
+    access_token = getaccess_token()
     url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + access_token
     values = {
         "touser": openid,
@@ -166,10 +174,7 @@ def faSongtext():
     except Exception as e:
         print(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + appid + '&secret=' + secret
-    reponse = urllib.request.Request(url=url)
-    html = urllib.request.urlopen(reponse).read().decode('utf-8')
-    access_token = json.loads(html)['access_token']
+    access_token=getaccess_token()
     url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + access_token
     values = {
         "touser": openid,
@@ -236,14 +241,14 @@ def getKefuList(ws):
     global constws, sendws
     if type(ws) == type(""):
         time.sleep(1)
-        if ws!='':
+        if ws != '':
             doc = es.get(index='kefu', doc_type='kefu', id=ws)['_source']
             newconstws = constws.copy()
             for newws in newconstws:
                 if constws[newws] == ws:
                     try:
                         sendws[newws].send(
-                        encrypt(json.dumps({'MSG': 0, 'openid': ws, 'data': doc})).decode('utf8'))
+                            encrypt(json.dumps({'MSG': 0, 'openid': ws, 'data': doc})).decode('utf8'))
                     except Exception as e:
                         print(e)
                         constws.pop(newws)
@@ -263,7 +268,7 @@ def getKefuList(ws):
                     if constws[newws] == '':
                         try:
                             sendws[newws].send(
-                            encrypt(json.dumps({'MSG': 1, 'openid': '', 'data': retdata})).decode('utf8'))
+                                encrypt(json.dumps({'MSG': 1, 'openid': '', 'data': retdata})).decode('utf8'))
                         except Exception as e:
                             print(e)
                             constws.pop(newws)
@@ -332,7 +337,6 @@ def kefutuisong():
                 MsgId = {}
             MsgId[content['MsgId']] = 0
         content['person'] = 0
-        print(content)
         if content['MsgType'] != 'event':
             try:
                 doc = es.get(index='kefu', doc_type='kefu', id=content['FromUserName'])
@@ -350,6 +354,7 @@ def kefutuisong():
                 doc['openid'] = content['FromUserName']
                 doc['updatatime'] = getTime()
                 user = es.get(index='userinfo', doc_type='userinfo', id=content['FromUserName'])['_source']
+                doc['unionid']=user['unionid']
                 doc['avatarUrl'] = user['avatarUrl']
                 doc['nickName'] = user['nickName']
                 doc['datalist'] = [content]
@@ -379,10 +384,12 @@ def getChengGong():
         print(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
     global hisdata, newhisdata
-    jintian = time.strftime("%Y%m%d", time.localtime())
+    jintian = time.strftime("%Y-%m-%d", time.localtime())
+    nowtime = time.strftime("%Y%m%d", time.localtime())
+    hisdatajintian=hisdata['jintian'][:4]+hisdata['jintian'][5:7]+hisdata['jintian'][8:10]
     if (jintian != hisdata['jintian']):
         searchtian = {"query": {"match_phrase_prefix": {"addtime": hisdata['jintian']}}}
-        Docs = es.search(index='userinfo', doc_type='userinfo', body=searchtian, size=1000, scroll="1m")
+        Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=searchtian, size=1000, scroll="1m")
         scroll = Docs['_scroll_id']
         jintianyonghushu = len(Docs['hits']['hits'])
         jintianfufeiyonghushu = 0
@@ -397,14 +404,14 @@ def getChengGong():
                 jintianyonghushu += len(Docs['hits']['hits'])
             except:
                 break
-        searchtian = {"query": {"match_phrase_prefix": {"updatatime": hisdata['jintian']}}}
-        Docs = es.search(index='userzhifu', doc_type='userzhifu', body=searchtian, size=1000, scroll="1m")
+        searchtian = {"query": {"match_phrase_prefix": {"updatatime": hisdatajintian}}}
+        Docs = chenggonges.search(index='userzhifu', doc_type='userzhifu', body=searchtian, size=1000, scroll="1m")
         scroll = Docs['_scroll_id']
         for doc in Docs['hits']['hits']:
             doc = doc['_source']
             if (len(doc['zhifudata']) == 1): jintianfufeiyonghushu += 1
             for zhifudata in doc['zhifudata']:
-                if hisdata['jintian'] == zhifudata['time_end'][:8]:
+                if hisdatajintian == zhifudata['time_end'][:8]:
                     jintianfufeicishu += 1
                     jintianfufeizonge += int(int(zhifudata['total_fee']) * 0.01)
         while 1:
@@ -417,7 +424,7 @@ def getChengGong():
                     doc = doc['_source']
                     if (len(doc['zhifudata']) == 1): jintianfufeiyonghushu += 1
                     for zhifudata in doc['zhifudata']:
-                        if hisdata['jintian'] == zhifudata['time_end'][:8]:
+                        if hisdatajintian == zhifudata['time_end'][:8]:
                             jintianfufeicishu += 1
                             jintianfufeizonge += int(int(zhifudata['total_fee']) * 0.01)
             except:
@@ -425,7 +432,7 @@ def getChengGong():
         newhisdata['zuotianyonghushu'] = jintianyonghushu
         newhisdata['zuotianfufeicishu'] = jintianfufeicishu
         newhisdata['zuotianfufeizonge'] = jintianfufeizonge
-        if (jintian[:6] != hisdata['jintian'][:6]):
+        if (jintian[:7] != hisdata['jintian'][:7]):
             newhisdata['dangyueyonghushu'] = 0
             newhisdata['dangyuefufeicishu'] = 0
             newhisdata['dangyuefufeizonge'] = 0
@@ -443,7 +450,7 @@ def getChengGong():
         f.close()
         hisdata = newhisdata.copy()
     searchtian = {"query": {"match_phrase_prefix": {"addtime": jintian}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=searchtian, size=1000, scroll="1m")
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=searchtian, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     jintianyonghushu = len(Docs['hits']['hits'])
     jintianfufeiyonghushu = 0
@@ -458,14 +465,14 @@ def getChengGong():
             jintianyonghushu += len(Docs['hits']['hits'])
         except:
             break
-    searchtian = {"query": {"match_phrase_prefix": {"updatatime": jintian}}}
-    Docs = es.search(index='userzhifu', doc_type='userzhifu', body=searchtian, size=1000, scroll="1m")
+    searchtian = {"query": {"match_phrase_prefix": {"updatatime": nowtime}}}
+    Docs = chenggonges.search(index='userzhifu', doc_type='userzhifu', body=searchtian, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     for doc in Docs['hits']['hits']:
         doc = doc['_source']
         if (len(doc['zhifudata']) == 1): jintianfufeiyonghushu += 1
         for zhifudata in doc['zhifudata']:
-            if jintian == zhifudata['time_end'][:8]:
+            if nowtime == zhifudata['time_end'][:8]:
                 jintianfufeicishu += 1
                 jintianfufeizonge += int(int(zhifudata['total_fee']) * 0.01)
     while 1:
@@ -478,7 +485,7 @@ def getChengGong():
                 doc = doc['_source']
                 if (len(doc['zhifudata']) == 1): jintianfufeiyonghushu += 1
                 for zhifudata in doc['zhifudata']:
-                    if jintian == zhifudata['time_end'][:8]:
+                    if nowtime == zhifudata['time_end'][:8]:
                         jintianfufeicishu += 1
                         jintianfufeizonge += int(int(zhifudata['total_fee']) * 0.01)
         except:
@@ -495,20 +502,7 @@ def getChengGong():
     newhisdata['dangyuefufeicishu'] = hisdata['dangyuefufeicishu'] + jintianfufeicishu
     newhisdata['dangyuefufeizonge'] = hisdata['dangyuefufeizonge'] + jintianfufeizonge
     body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 1}}, ]}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
-    scroll = Docs['_scroll_id']
-    newhisdata['xiantiyan'] = len(Docs['hits']['hits'])
-    while 1:
-        try:
-            Docs = es.scroll(scroll_id=scroll, scroll="1m")
-            if (len(Docs['hits']['hits']) == 0):
-                break
-            scroll = Docs['_scroll_id']
-            newhisdata['xiantiyan'] += len(Docs['hits']['hits'])
-        except:
-            break
-    body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 2}}, ]}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     newhisdata['xianyuehuiyuan'] = len(Docs['hits']['hits'])
     while 1:
@@ -520,8 +514,8 @@ def getChengGong():
             newhisdata['xianyuehuiyuan'] += len(Docs['hits']['hits'])
         except:
             break
-    body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 3}}, ]}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
+    body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 2}}, ]}}}
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     newhisdata['xiannianhuiyuan'] = len(Docs['hits']['hits'])
     while 1:
@@ -533,8 +527,21 @@ def getChengGong():
             newhisdata['xiannianhuiyuan'] += len(Docs['hits']['hits'])
         except:
             break
+    body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 3}}, ]}}}
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
+    scroll = Docs['_scroll_id']
+    newhisdata['xiansijiaoyigeyue'] = len(Docs['hits']['hits'])
+    while 1:
+        try:
+            Docs = es.scroll(scroll_id=scroll, scroll="1m")
+            if (len(Docs['hits']['hits']) == 0):
+                break
+            scroll = Docs['_scroll_id']
+            newhisdata['xiansijiaoyigeyue'] += len(Docs['hits']['hits'])
+        except:
+            break
     body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 4}}, ]}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     newhisdata['xiansijiaosangeyue'] = len(Docs['hits']['hits'])
     while 1:
@@ -547,7 +554,7 @@ def getChengGong():
         except:
             break
     body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 5}}, ]}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     newhisdata['xiansijiaoyinian'] = len(Docs['hits']['hits'])
     while 1:
@@ -560,7 +567,7 @@ def getChengGong():
         except:
             break
     body = {"query": {"bool": {"filter": [{"term": {"vipdengji": 6}}, ]}}}
-    Docs = es.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
+    Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     newhisdata['xianlianmenghuiyuan'] = len(Docs['hits']['hits'])
     while 1:
@@ -586,22 +593,19 @@ def getXiangqing():
         return json.dumps({'MSG': '警告！非法入侵！！！'})
     nowtime = time.strftime("%Y-%m-%d", time.localtime())
     body = {"query": {"match_phrase_prefix": {"time": nowtime}}}
-    retdata = {}
-    renshu = {}
-    huashurenshu = {}
-    huashucishu = 0
-    guanlirenshu = {}
-    guanlicishu = 0
-    biaoqingrenshu = {}
-    biaoqingcishu = 0
-    shouyeguanlirenshu = {}
-    shouyeguanlicishu = 0
-    tuweiqinghuarenshu = {}
-    tuweiqinghuacishu = 0
-    wenzhangrenshu = {}
-    wenzhangcishu = 0
-    shipinrenshu = {}
-    shipincishu = 0
+    retdata = {'all': {'renshu': {}, 'cishu': 0, 'name': '总计', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'searchLiaomeihuashu': {'renshu': {}, 'cishu': 0, 'name': '话术搜索', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'searchBiaoqing': {'renshu': {}, 'cishu': 0, 'name': '表情搜索', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'searchBaike': {'renshu': {}, 'cishu': 0, 'name': '百科搜索', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getLiaomeitaoluList': {'renshu': {}, 'cishu': 0, 'name': '撩妹套路', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getXingxiangjianshe': {'renshu': {}, 'cishu': 0, 'name': '形象建设', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getLiaomeishizhan': {'renshu': {}, 'cishu': 0, 'name': '撩妹实战', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getKecheng': {'renshu': {}, 'cishu': 0, 'name': '课程阅读', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getTuweiqinghua': {'renshu': {}, 'cishu': 0, 'name': '土味情话', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getBaike': {'renshu': {}, 'cishu': 0, 'name': '百科阅读', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getWenda': {'renshu': {}, 'cishu': 0, 'name': '问答阅读', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'getCeshidaan': {'renshu': {}, 'cishu': 0, 'name': '心理测试', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
+               'setDianzanshoucang': {'renshu': {}, 'cishu': 0, 'name': '点赞收藏', 'renshuzhanbi': 0, 'cishuzhanbi': 0}}
     Docs = chenggonges.search(index='userhis', doc_type='userhis', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     allDocs = []
@@ -618,47 +622,25 @@ def getXiangqing():
     for line in allDocs:
         line = line['_source']
         if line['event'] in histype:
-            renshu[line['openid']] = 0
-        if line['event'] == 'searchHuashu':
-            huashurenshu[line['openid']] = 0
-            huashucishu += 1
-        if line['event'] == 'searchGuanli':
-            guanlirenshu[line['openid']] = 0
-            guanlicishu += 1
-        if line['event'] == 'searchBiaoqing':
-            biaoqingrenshu[line['openid']] = 0
-            biaoqingcishu += 1
-        if line['event'] == 'getMethodologyList':
-            shouyeguanlirenshu[line['openid']] = 0
-            shouyeguanlicishu += 1
-        if line['event'] == 'getTuweiqinghua':
-            tuweiqinghuarenshu[line['openid']] = 0
-            tuweiqinghuacishu += 1
-        if line['event'] == 'setJilu':
-            if line['jilutype'] == 'html':
-                wenzhangrenshu[line['openid']] = 0
-                wenzhangcishu += 1
-            if line['jilutype'] == 'ganhuo':
-                shipinrenshu[line['openid']] = 0
-                shipincishu += 1
-    retdata['renshu'] = len(renshu)
-    retdata[
-        'cishu'] = huashucishu + guanlicishu + biaoqingcishu + shouyeguanlicishu + tuweiqinghuacishu + wenzhangcishu + shipincishu
-    retdata['huashurenshu'] = len(huashurenshu)
-    retdata['huashucishu'] = huashucishu
-    retdata['guanlirenshu'] = len(guanlirenshu)
-    retdata['guanlicishu'] = guanlicishu
-    retdata['biaoqingrenshu'] = len(biaoqingrenshu)
-    retdata['biaoqingcishu'] = biaoqingcishu
-    retdata['shouyeguanlirenshu'] = len(shouyeguanlirenshu)
-    retdata['shouyeguanlicishu'] = shouyeguanlicishu
-    retdata['tuweiqinghuarenshu'] = len(tuweiqinghuarenshu)
-    retdata['tuweiqinghuacishu'] = tuweiqinghuacishu
-    retdata['wenzhangrenshu'] = len(wenzhangrenshu)
-    retdata['wenzhangcishu'] = wenzhangcishu
-    retdata['shipinrenshu'] = len(shipinrenshu)
-    retdata['shipincishu'] = shipincishu
-    return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
+            try:
+                retdata['all']['renshu'][line['unionid']] = 0
+                retdata['all']['cishu'] += 1
+                retdata[line['event']]['renshu'][line['unionid']] = 0
+                retdata[line['event']]['cishu'] += 1
+            except:
+                None
+    for line in retdata:
+        retdata[line]['renshu'] = len(retdata[line]['renshu'])
+    renshu = max(retdata['all']['renshu'], 1)
+    cishu = max(retdata['all']['cishu'], 1)
+    for line in retdata:
+        retdata[line]['renshuzhanbi'] = int(retdata[line]['renshu'] / renshu * 1000) / 1000
+        retdata[line]['cishuzhanbi'] = int(retdata[line]['cishu'] / cishu * 1000) / 1000
+    newdata=[]
+    for line in retdata:
+        newdata.append(retdata[line])
+    newdata=sorted(newdata,key=lambda x:x['cishu'],reverse=True)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': newdata}))
 
 
 @app.route("/test/jinpushequ/getAdList", methods=["POST"])
@@ -692,7 +674,7 @@ def getTubiaoList():
     return encrypt(json.dumps({'MSG': 'OK', 'data': retdata}))
 
 
-@app.route("/api/jinpushequ/getFcList", methods=["POST"])
+@app.route("/test/jinpushequ/getFcList", methods=["POST"])
 def getFcList():
     url = "https://mp.weixin.qq.com/s/m-xA4OfbGE_cEfnF3408qw"
     retdata = [{'title': '金浦社区简介', 'adurl': 'cloud://yuzikeji-f7d32f.7975-yuzikeji-f7d32f/jingdian/1.jpg',

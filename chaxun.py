@@ -13,8 +13,8 @@ blocklen = 500
 
 
 class Lianaizhuli_ES:
-    es = Elasticsearch([{"host": "119.29.67.239", "port": 9218, "timeout": 3600}])
-    # escopy = Elasticsearch([{"host": "182.254.227.188", "port": 9218, "timeout": 3600}])
+    # es = Elasticsearch([{"host": "119.29.67.239", "port": 9218, "timeout": 3600}])
+    es = Elasticsearch([{"host": "182.254.227.188", "port": 9218, "timeout": 3600}])
 
     def __init__(self):
         # self.es.indices.delete(index='userinfo')
@@ -110,8 +110,10 @@ def chaxun29():
     t=0
     a=[]
     for doc in Docs['hits']['hits']:
-        if doc['_source']['updatatime'][:8]>=nowtime:
-            a.append(doc['_source']['openid'])
+        try:
+            if doc['_source']['updatatime'][:8]>=nowtime:
+                a.append(doc['_source']['openid'])
+        except:None
             # print(doc['_source']['options'],doc['_source']['city'])
             # if '1000009' in json.dumps(doc['_source']['options']):
             #     t+=1
