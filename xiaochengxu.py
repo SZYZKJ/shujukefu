@@ -33,7 +33,7 @@ es = Elasticsearch([{"host": "119.29.67.239", "port": 9218, "timeout": 3600}])
 chenggonges = Elasticsearch([{"host": "182.254.227.188", "port": 9218, "timeout": 3600}])
 histype = {'searchLiaomeihuashu': 0, 'searchBiaoqing': 0, 'searchBaike': 0, 'getLiaomeitaoluList': 0,
            'getXingxiangjianshe': 0, 'getLiaomeishizhan': 0, 'getKecheng': 0, 'getTuweiqinghua': 0, 'getBaike': 0,
-           'getWenda': 0, 'getCeshidaan': 0, 'setDianzanshoucang': 0, }
+           'getWenda': 0, 'getCeshidaan': 0, 'setDianzanshoucang': 0, 'setJilu':0,}
 key = "pangyuming920318"
 iv = "abcdefabcdefabcd"
 appid = 'wxa9ef833cef143ce1'
@@ -57,8 +57,11 @@ f.close()
 constws = {}
 sendws = {}
 MsgId = {}
-access_tokentime=[]
+access_tokentime = []
+
+
 def getaccess_token():
+    global access_tokentime
     access_token = ''
     if len(access_tokentime) == 0 or access_tokentime[1] < int(time.time()):
         url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + appid + '&secret=' + secret
@@ -71,6 +74,7 @@ def getaccess_token():
     else:
         access_token = access_tokentime[0]
     return access_token
+
 
 def getTime():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -101,13 +105,14 @@ def decryptweixin(encrypted, weixinkey, weixiniv):
 def xiaFashuruzhuangtai():
     try:
         params = json.loads(decrypt(request.stream.read()))
-        openid = params['openid']
+        unionid = params['unionid']
         command = params['command']
     except Exception as e:
         print(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    access_token=getaccess_token()
+    access_token = getaccess_token()
     url = 'https://api.weixin.qq.com/cgi-bin/message/custom/typing?access_token=' + access_token
+    openid=chenggonges.get(index='userinfo',doc_type='userinfo',id=unionid)['_source']['openid']
     values = {
         "touser": openid,
         "command": command
@@ -118,10 +123,11 @@ def xiaFashuruzhuangtai():
     return encrypt(html)
 
 
-def faSongwenhouyu(openid):
+def faSongwenhouyu(unionid):
     textvalue = "您好，我是恋爱联盟客服薇薇，很高兴为您服务。"
     access_token = getaccess_token()
     url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + access_token
+    openid = chenggonges.get(index='userinfo', doc_type='userinfo', id=unionid)['_source']['openid']
     values = {
         "touser": openid,
         "msgtype": "text",
@@ -144,24 +150,24 @@ def faSongwenhouyu(openid):
     }
     if html['errcode'] == 0:
         try:
-            doc = es.get(index='kefu', doc_type='kefu', id=openid)
+            doc = es.get(index='kefu', doc_type='kefu', id=unionid)
             doc = doc['_source']
             doc['datalist'].append(content)
             doc['updatatime'] = getTime()
             doc['unread'] += 1
             doc['zuijin'] = textvalue
-            es.index(index='kefu', doc_type='kefu', id=openid, body=doc)
+            es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
         except Exception as e:
             doc = {}
-            doc['openid'] = openid
+            doc['unionid'] = unionid
             doc['updatatime'] = getTime()
-            user = es.get(index='userinfo', doc_type='userinfo', id=openid)['_source']
+            user = chenggonges.get(index='userinfo', doc_type='userinfo', id=unionid)['_source']
             doc['avatarUrl'] = user['avatarUrl']
             doc['nickName'] = user['nickName']
             doc['datalist'] = [content]
             doc['unread'] = 1
             doc['zuijin'] = textvalue
-            es.index(index='kefu', doc_type='kefu', id=openid, body=doc)
+            es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
         getKefuList('')
 
 
@@ -169,13 +175,14 @@ def faSongwenhouyu(openid):
 def faSongtext():
     try:
         params = json.loads(decrypt(request.stream.read()))
-        openid = params['openid']
+        unionid = params['unionid']
         textvalue = params['textvalue']
     except Exception as e:
         print(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    access_token=getaccess_token()
+    access_token = getaccess_token()
     url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + access_token
+    openid = chenggonges.get(index='userinfo', doc_type='userinfo', id=unionid)['_source']['openid']
     values = {
         "touser": openid,
         "msgtype": "text",
@@ -198,25 +205,25 @@ def faSongtext():
     }
     if html['errcode'] == 0:
         try:
-            doc = es.get(index='kefu', doc_type='kefu', id=openid)
+            doc = es.get(index='kefu', doc_type='kefu', id=unionid)
             doc = doc['_source']
             doc['datalist'].append(content)
             doc['updatatime'] = getTime()
             doc['unread'] = 0
             doc['zuijin'] = textvalue
-            es.index(index='kefu', doc_type='kefu', id=openid, body=doc)
+            es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
         except Exception as e:
             doc = {}
-            doc['openid'] = openid
+            doc['unionid'] = unionid
             doc['updatatime'] = getTime()
-            user = es.get(index='userinfo', doc_type='userinfo', id=openid)['_source']
+            user = chenggonges.get(index='userinfo', doc_type='userinfo', id=unionid)['_source']
             doc['avatarUrl'] = user['avatarUrl']
             doc['nickName'] = user['nickName']
             doc['datalist'] = [content]
             doc['unread'] = 0
             doc['zuijin'] = textvalue
-            es.index(index='kefu', doc_type='kefu', id=openid, body=doc)
-        getKefuList(openid)
+            es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
+        getKefuList(unionid)
     return encrypt(json.dumps(html))
 
 
@@ -224,14 +231,14 @@ def faSongtext():
 def upUnread():
     try:
         params = json.loads(decrypt(request.stream.read()))
-        openid = params['openid']
+        unionid = params['unionid']
     except Exception as e:
         print(e)
         return json.dumps({'MSG': '警告！非法入侵！！！'})
-    doc = es.get(index='kefu', doc_type='kefu', id=openid)
+    doc = es.get(index='kefu', doc_type='kefu', id=unionid)
     doc = doc['_source']
     doc['unread'] = 0
-    es.index(index='kefu', doc_type='kefu', id=openid, body=doc)
+    es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
     getKefuList('')
     return encrypt(json.dumps({'MSG': 'OK'}))
 
@@ -248,7 +255,7 @@ def getKefuList(ws):
                 if constws[newws] == ws:
                     try:
                         sendws[newws].send(
-                            encrypt(json.dumps({'MSG': 0, 'openid': ws, 'data': doc})).decode('utf8'))
+                            encrypt(json.dumps({'MSG': 0, 'unionid': ws, 'data': doc})).decode('utf8'))
                     except Exception as e:
                         print(e)
                         constws.pop(newws)
@@ -268,7 +275,7 @@ def getKefuList(ws):
                     if constws[newws] == '':
                         try:
                             sendws[newws].send(
-                                encrypt(json.dumps({'MSG': 1, 'openid': '', 'data': retdata})).decode('utf8'))
+                                encrypt(json.dumps({'MSG': 1, 'unionid': '', 'data': retdata})).decode('utf8'))
                         except Exception as e:
                             print(e)
                             constws.pop(newws)
@@ -287,10 +294,10 @@ def getKefuList(ws):
             print(a)
             if a:
                 params = json.loads(decrypt(a.encode('utf8')))
-                openid = params['openid']
-                constws[str(ws)] = openid
+                unionid = params['unionid']
+                constws[str(ws)] = unionid
                 sendws[str(ws)] = ws
-                if openid == '':
+                if unionid == '':
                     nowtime = time.strftime("%Y-%m", time.localtime())
                     body = {"query": {"match_phrase_prefix": {"updatatime": nowtime}}}
                     Docs = es.search(index='kefu', doc_type='kefu', body=body, size=10000)
@@ -299,7 +306,7 @@ def getKefuList(ws):
                     for doc in Docs:
                         doc['_source']['updatatime'] = doc['_source']['updatatime'][5:16]
                         retdata.append(doc['_source'])
-                    ws.send(encrypt(json.dumps({'MSG': 1, 'openid': '', 'data': retdata})).decode('utf8'))
+                    ws.send(encrypt(json.dumps({'MSG': 1, 'unionid': '', 'data': retdata})).decode('utf8'))
                 else:
                     ws.send(encrypt(json.dumps({'MSG': 2})).decode('utf8'))
         except Exception as e:
@@ -338,8 +345,10 @@ def kefutuisong():
             MsgId[content['MsgId']] = 0
         content['person'] = 0
         if content['MsgType'] != 'event':
+            search = {'query': {'match': {'openid': content['FromUserName']}}}
+            unionid=chenggonges.search(index='userinfo',doc_type='userinfo',body=search,size=1)['hits']['hits'][0]['_source']['unionid']
             try:
-                doc = es.get(index='kefu', doc_type='kefu', id=content['FromUserName'])
+                doc = es.get(index='kefu', doc_type='kefu', id=unionid)
                 doc = doc['_source']
                 doc['datalist'].append(content)
                 doc['updatatime'] = getTime()
@@ -348,13 +357,14 @@ def kefutuisong():
                     doc['zuijin'] = '[图片]'
                 else:
                     doc['zuijin'] = content['Content']
-                es.index(index='kefu', doc_type='kefu', id=content['FromUserName'], body=doc)
+                es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
             except Exception as e:
+
                 doc = {}
-                doc['openid'] = content['FromUserName']
+                doc['unionid'] = unionid
                 doc['updatatime'] = getTime()
-                user = es.get(index='userinfo', doc_type='userinfo', id=content['FromUserName'])['_source']
-                doc['unionid']=user['unionid']
+                user = chenggonges.get(index='userinfo', doc_type='userinfo', id=unionid)['_source']
+                doc['unionid'] = user['unionid']
                 doc['avatarUrl'] = user['avatarUrl']
                 doc['nickName'] = user['nickName']
                 doc['datalist'] = [content]
@@ -363,15 +373,15 @@ def kefutuisong():
                     doc['zuijin'] = '[图片]'
                 else:
                     doc['zuijin'] = content['Content']
-                es.index(index='kefu', doc_type='kefu', id=content['FromUserName'], body=doc)
-            getKefuList(content['FromUserName'])
+                es.index(index='kefu', doc_type='kefu', id=unionid, body=doc)
+            getKefuList(unionid)
         elif content['Event'] == 'user_enter_tempsession':
             if (content['FromUserName'] + str(content['CreateTime'])) in MsgId:
                 return "SUCCESS"
             if len(MsgId) >= 9999:
                 MsgId = {}
             MsgId[content['FromUserName'] + str(content['CreateTime'])] = 0
-            faSongwenhouyu(content['FromUserName'])
+            faSongwenhouyu(unionid)
         return "SUCCESS"
 
 
@@ -386,7 +396,7 @@ def getChengGong():
     global hisdata, newhisdata
     jintian = time.strftime("%Y-%m-%d", time.localtime())
     nowtime = time.strftime("%Y%m%d", time.localtime())
-    hisdatajintian=hisdata['jintian'][:4]+hisdata['jintian'][5:7]+hisdata['jintian'][8:10]
+    hisdatajintian = hisdata['jintian'][:4] + hisdata['jintian'][5:7] + hisdata['jintian'][8:10]
     if (jintian != hisdata['jintian']):
         searchtian = {"query": {"match_phrase_prefix": {"addtime": hisdata['jintian']}}}
         Docs = chenggonges.search(index='userinfo', doc_type='userinfo', body=searchtian, size=1000, scroll="1m")
@@ -605,7 +615,8 @@ def getXiangqing():
                'getBaike': {'renshu': {}, 'cishu': 0, 'name': '百科阅读', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
                'getWenda': {'renshu': {}, 'cishu': 0, 'name': '问答阅读', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
                'getCeshidaan': {'renshu': {}, 'cishu': 0, 'name': '心理测试', 'renshuzhanbi': 0, 'cishuzhanbi': 0},
-               'setDianzanshoucang': {'renshu': {}, 'cishu': 0, 'name': '点赞收藏', 'renshuzhanbi': 0, 'cishuzhanbi': 0}}
+               'setDianzanshoucang': {'renshu': {}, 'cishu': 0, 'name': '点赞收藏', 'renshuzhanbi': 0, 'cishuzhanbi': 0}, }
+    wenti = []
     Docs = chenggonges.search(index='userhis', doc_type='userhis', body=body, size=1000, scroll="1m")
     scroll = Docs['_scroll_id']
     allDocs = []
@@ -623,10 +634,14 @@ def getXiangqing():
         line = line['_source']
         if line['event'] in histype:
             try:
-                retdata['all']['renshu'][line['unionid']] = 0
-                retdata['all']['cishu'] += 1
-                retdata[line['event']]['renshu'][line['unionid']] = 0
-                retdata[line['event']]['cishu'] += 1
+                if line['event'] == 'setJilu':
+                    if line['jilutype']=='huashu':
+                        wenti.insert(0,{'wenti':line['detail'],'daan':line['jilucontent']})
+                else:
+                    retdata['all']['renshu'][line['unionid']] = 0
+                    retdata['all']['cishu'] += 1
+                    retdata[line['event']]['renshu'][line['unionid']] = 0
+                    retdata[line['event']]['cishu'] += 1
             except:
                 None
     for line in retdata:
@@ -636,11 +651,11 @@ def getXiangqing():
     for line in retdata:
         retdata[line]['renshuzhanbi'] = int(retdata[line]['renshu'] / renshu * 1000) / 1000
         retdata[line]['cishuzhanbi'] = int(retdata[line]['cishu'] / cishu * 1000) / 1000
-    newdata=[]
+    newdata = []
     for line in retdata:
         newdata.append(retdata[line])
-    newdata=sorted(newdata,key=lambda x:x['cishu'],reverse=True)
-    return encrypt(json.dumps({'MSG': 'OK', 'data': newdata}))
+    newdata = sorted(newdata, key=lambda x: x['cishu'], reverse=True)
+    return encrypt(json.dumps({'MSG': 'OK', 'data': newdata, 'wenti': wenti}))
 
 
 @app.route("/test/jinpushequ/getAdList", methods=["POST"])
@@ -729,6 +744,42 @@ def getWenzhang():
     doc['read_num'] += 1
     es.index(index='jinpushequ', doc_type='jinpushequ', id=id, body=doc)
     return encrypt(json.dumps({'MSG': 'OK', 'data': doc}))
+
+
+@app.route("/test/getZhifulist", methods=["POST"])
+def getZhifulist():
+    try:
+        params = json.loads(decrypt(request.stream.read()))
+        yidingchenggong = params['yidingchenggong']
+    except Exception as e:
+        print(e)
+        return json.dumps({'MSG': '警告！非法入侵！！！'})
+    unionidlist = {}
+    nowtime = time.strftime("%Y%m%d", time.localtime())
+    search = {"query": {"match_phrase_prefix": {"updatatime": nowtime}}}
+    Docs = chenggonges.search(index='userzhifu', doc_type='userzhifu', body=search, size=10000)
+    userlist = []
+    for doc in Docs['hits']['hits']:
+        try:
+            if doc['_source']['updatatime'][:8] == nowtime:
+                userlist.append(doc['_source']['unionid'])
+                unionidlist[doc['_source']['unionid']] = doc['_source']['updatatime']
+        except:
+            None
+    retlist = []
+    for unionid in userlist:
+        doc = chenggonges.get(index='userinfo', doc_type='userinfo', id=unionid)['_source']
+        purePhoneNumber = ''
+        if 'purePhoneNumber' in doc:
+            purePhoneNumber = doc['purePhoneNumber']
+        retlist.append([doc['nickName'],
+                        doc['addtime'], str(doc['xiaofeicishu']), str(doc['xiaofeizonge']), doc[
+                            'city'], unionidlist[unionid][:4] + '-' + unionidlist[unionid][4:6] + '-' + unionidlist[
+                                                                                                            unionid][
+                                                                                                        6:8] + ' ' +
+                        unionidlist[unionid][8:10] + ':' + unionidlist[unionid][10:12] + ':' + unionidlist[unionid][
+                                                                                               12:14],purePhoneNumber])
+    return encrypt(json.dumps({'MSG': 'OK', 'data': retlist}))
 
 
 if __name__ == "__main__":

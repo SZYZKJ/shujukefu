@@ -11,18 +11,21 @@ datapath = '/home/ubuntu/data/lianailianmeng/data'
 os.chdir(datapath)
 
 
-es = Elasticsearch([{"host": "119.29.67.239", "port": 9218, "timeout": 3600}])
+es=Elasticsearch([{"host": "182.254.227.188", "port": 9218, "timeout": 3600}])
 search = {"query": {"match_all": {}}}
-Docs=es.search(index='userinfo',doc_type='userinfo',body=search,size=10000)['hits']['hits']
-word={}
-for doc in Docs:
+Docs = es.search(index='userinfo', doc_type='userinfo', body=search, size=10000)
+for doc in Docs['hits']['hits']:
     doc=doc['_source']
-    for name in doc:
-        word[name]=0
-for name in word:
-    print(name)
-# userid='oz7z64tQmf3SAoW7qqtxk9IitxZ0'
-# doc=es.get(index='userinfo',doc_type='userinfo',id=userid)['_source']
-# doc.pop('phoneNumber')
-# es.index(index='userinfo',doc_type='userinfo',id=userid,body=doc)
+    if 'nickName' in doc and 'Novoeight' in doc['nickName']:
+        doc['vipdengji']=6
+        doc['viptime']+=3153600000
+        doc['sijiaotime']+=3153600000
+        print(doc)
+        es.index(index='userinfo', doc_type='userinfo', id=doc['unionid'],body=doc)
+
+
+
+
+
+
 
